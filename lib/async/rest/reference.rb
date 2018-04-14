@@ -1,4 +1,4 @@
-# Copyright, 2017, by Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2018, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -52,10 +52,10 @@ module Async
 			def append(buffer)
 				if @query_string
 					buffer << escape_path(@path) << '?' << query_string
-					buffer << '&' << query_parameters if @parameters
+					buffer << '&' << encode(@parameters) if @parameters
 				else
 					buffer << escape_path(@path)
-					buffer << '?' << query_parameters if @parameters
+					buffer << '?' << encode(@parameters) if @parameters
 				end
 				
 				if @fragment
@@ -97,16 +97,6 @@ module Async
 			
 			private
 			
-			# According to https://tools.ietf.org/html/rfc3986#section-3.3, we escape non-pchar.
-			NON_PCHAR = /([^a-zA-Z0-9_\-\.~!$&'()*+,;=:@\/]+)/.freeze
-			
-			def escape_path(path)
-				encoding = path.encoding
-				path.b.gsub(NON_PCHAR) do |m|
-					'%' + m.unpack('H2' * m.bytesize).join('%').upcase
-				end.force_encoding(encoding)
-			end
-			
 			# Escapes a generic string, using percent encoding.
 			def escape(string)
 				encoding = string.encoding
@@ -115,19 +105,27 @@ module Async
 				end.force_encoding(encoding)
 			end
 			
-			def query_parameters
-				build_nested_query(@parameters)
+			# According to https://tools.ietf.org/html/rfc3986#section-3.3, we escape non-pchar.
+			NON_PCHAR = /([^a-zA-Z0-9_\-\.~!$&'()*+,;=:@\/]+)/.freeze
+			
+			# Escapes a path
+			def escape_path(path)
+				encoding = path.encoding
+				path.b.gsub(NON_PCHAR) do |m|
+					'%' + m.unpack('H2' * m.bytesize).join('%').upcase
+				end.force_encoding(encoding)
 			end
 			
-			def build_nested_query(value, prefix = nil)
+			# Encodes a hash or array into a query string
+			def encode(value, prefix = nil)
 				case value
 				when Array
 					value.map { |v|
-						build_nested_query(v, "#{prefix}[]")
+						encode(v, "#{prefix}[]")
 					}.join("&")
 				when Hash
 					value.map { |k, v|
-						build_nested_query(v, prefix ? "#{prefix}[#{escape(k.to_s)}]" : escape(k.to_s))
+						encode(v, prefix ? "#{prefix}[#{escape(k.to_s)}]" : escape(k.to_s))
 					}.reject(&:empty?).join('&')
 				when nil
 					prefix

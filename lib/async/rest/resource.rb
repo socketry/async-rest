@@ -1,4 +1,4 @@
-# Copyright, 2017, by Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2018, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,44 +19,51 @@
 # THE SOFTWARE.
 
 require_relative 'reference'
+require_relative 'json_body'
 
 require 'async/http/client'
-require 'json'
+require 'async/http/url_endpoint'
 
 module Async
 	module REST
-		class JSONBody
-			def initialize(body)
-				@body = body
-			end
-			
-			def close
-				@body = @body.close
-				
-				return self
-			end
-			
-			def join
-				JSON.parse(@body.join, symbolize_names: true)
-			end
-			
-			def self.dump(payload)
-				JSON.dump(payload)
-			end
-			
-			def finished?
-				@body.finished?
-			end
-		end
-		
 		class Resource
-			def initialize(client, reference = Reference.parse, headers = {}, max_redirects: 10)
+			DEFAULT_HEADERS = {
+				'accept-encoding' => 'gzip',
+				'accept' => 'application/json;q=0.9, */*;q=0.8'
+			}
+			
+			def initialize(client, reference = Reference.parse, headers = DEFAULT_HEADERS, max_redirects: 10)
 				@client = client
 				@reference = reference
 				@headers = headers
 				
 				@max_redirects = max_redirects
 			end
+			
+			def close
+				@client.close
+			end
+			
+			def self.for(url, headers = {}, **options)
+				endpoint = HTTP::URLEndpoint.parse(url)
+				client = HTTP::Client.new(endpoint)
+				
+				resource = self.new(client, Reference.parse(endpoint.url.request_uri), headers)
+				
+				return resource unless block_given?
+				
+				begin
+					yield resource
+				ensure
+					resource.close
+				end
+			end
+			
+			attr :client
+			attr :reference
+			attr :headers
+			
+			attr :max_redirects
 			
 			def [] path
 				self.class.new(@client, @reference.nest(path), @headers, max_redirects: @max_redirects)
@@ -85,6 +92,8 @@ module Async
 			end
 			
 			def process_response(response)
+				response.body = HTTP::InflateBody.for_response(response)
+				
 				content_type = response.headers['content-type']
 				
 				if wrapper = wrapper_for(content_type)
@@ -98,7 +107,11 @@ module Async
 				define_method(verb.downcase) do |payload = nil, **parameters, &block|
 					reference = @reference.dup(nil, parameters)
 					
-					response = self.request(verb, reference.to_str, @headers, prepare_body(payload)) do |response|
+					if body = prepare_body(payload)
+						body = HTTP::DeflateBody.for_request(@headers, body)
+					end
+					
+					response = self.request(verb, reference.to_str, @headers, body) do |response|
 						process_response(response)
 					end
 					

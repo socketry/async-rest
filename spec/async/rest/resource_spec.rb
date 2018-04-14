@@ -22,16 +22,27 @@
 
 require 'async/http/server'
 require 'async/http/url_endpoint'
+
+require 'async/http/body'
+require 'async/http/deflate_body'
+
 require 'async/rest/resource'
 
 RSpec.describe Async::REST::Resource do
 	include_context Async::RSpec::Reactor
 	
 	let(:endpoint) {Async::HTTP::URLEndpoint.parse('http://127.0.0.1:9295', reuse_port: true)}
+	let(:body) {Async::HTTP::BufferedBody.new(['{"foo": "bar"}'])}
 	
-	it "client can get resource" do
+	it "can get resource" do
+		response_body = body
+		
 		server = Async::HTTP::Server.new(endpoint) do |request, peer, address|
-			[200, {'content-type' => 'application/json'}, ['{"foo": "bar"}']]
+			[
+				200,
+				{'content-type' => 'application/json'},
+				response_body
+			]
 		end
 		
 		server_task = reactor.async do
@@ -43,6 +54,35 @@ RSpec.describe Async::REST::Resource do
 		
 		response = resource.get
 		expect(response).to be_success
+		expect(response.body).to be_kind_of Async::REST::JSONBody
+		expect(response.read).to be == {foo: 'bar'}
+		
+		server_task.stop
+		client.close
+	end
+	
+	it "can get compressed resource" do
+		response_body = body
+		
+		server = Async::HTTP::Server.new(endpoint) do |request, peer, address|
+			[
+				200,
+				{'content-type' => 'application/json', 'content-encoding' => 'gzip'},
+				Async::HTTP::DeflateBody.for(response_body)
+			]
+		end
+		
+		server_task = reactor.async do
+			server.run
+		end
+		
+		client = Async::HTTP::Client.new(endpoint)
+		resource = Async::REST::Resource.new(client)
+		
+		response = resource.get
+		expect(response).to be_success
+		expect(response.headers['content-encoding']).to be == 'gzip'
+		
 		expect(response.body).to be_kind_of Async::REST::JSONBody
 		expect(response.read).to be == {foo: 'bar'}
 		

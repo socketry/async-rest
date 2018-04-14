@@ -18,4 +18,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require "async/rest/version"
+require 'json'
+
+module Async
+	module REST
+		class JSONBody
+			def initialize(body)
+				@body = body
+			end
+			
+			def close
+				@body = @body.close
+				
+				return self
+			end
+			
+			def join
+				JSON.parse(@body.join, symbolize_names: true)
+			end
+			
+			def self.dump(payload)
+				JSON.dump(payload)
+			end
+			
+			def finished?
+				@body.finished?
+			end
+		end
+	end
+end
