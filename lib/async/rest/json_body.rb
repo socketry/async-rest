@@ -23,6 +23,24 @@ require 'json'
 module Async
 	module REST
 		class JSONBody
+			def self.wrap_request(headers, payload)
+				headers['accept'] = 'application/json;q=0.9, */*;q=0.8'
+				
+				if payload
+					headers['content-type'] = 'application/json'
+					
+					return [JSON.dump(payload)]
+				end
+			end
+			
+			def self.wrap_response(response)
+				if content_type = response.headers['content-type']
+					if content_type.start_with? 'application/json'
+						response.body = self.new(response.body)
+					end
+				end
+			end
+			
 			def initialize(body)
 				@body = body
 			end
@@ -35,10 +53,6 @@ module Async
 			
 			def join
 				JSON.parse(@body.join, symbolize_names: true)
-			end
-			
-			def self.dump(payload)
-				JSON.dump(payload)
 			end
 			
 			def finished?

@@ -22,33 +22,35 @@ require_relative 'reference'
 require_relative 'json_body'
 
 require 'async/http/client'
+require 'async/http/compressor'
 require 'async/http/url_endpoint'
 
 module Async
 	module REST
 		class Resource
-			DEFAULT_HEADERS = {
-				'accept-encoding' => 'gzip',
-				'accept' => 'application/json;q=0.9, */*;q=0.8'
-			}
-			
-			def initialize(client, reference = Reference.parse, headers = DEFAULT_HEADERS, max_redirects: 10)
+			def initialize(client, reference = Reference.parse, headers = {}, wrapper = JSONBody)
 				@client = client
 				@reference = reference
 				@headers = headers
-				
-				@max_redirects = max_redirects
+				@wrapper = wrapper
 			end
 			
 			def close
 				@client.close
 			end
 			
-			def self.for(url, headers = {}, **options)
+			def self.connect(url)
 				endpoint = HTTP::URLEndpoint.parse(url)
-				client = HTTP::Client.new(endpoint)
 				
-				resource = self.new(client, Reference.parse(endpoint.url.request_uri), headers)
+				reference = Reference.parse(endpoint.url.request_uri)
+				
+				return HTTP::Compressor.new(HTTP::Client.new(endpoint)), reference
+			end
+			
+			def self.for(url, *args)
+				client, reference = connect(url)
+				
+				resource = self.new(client, reference, *args)
 				
 				return resource unless block_given?
 				
@@ -63,14 +65,12 @@ module Async
 			attr :reference
 			attr :headers
 			
-			attr :max_redirects
-			
-			def [] path
-				self.class.new(@client, @reference.nest(path), @headers, max_redirects: @max_redirects)
+			def self.nest(parent, path = nil, *args)
+				self.new(*args, parent.client, parent.reference.dup(path), parent.headers)
 			end
 			
 			def with(**headers)
-				self.class.new(@client, @reference, @headers.merge(headers), max_redirects: @max_redirects)
+				self.class.new(@client, @reference, @headers.merge(headers))
 			end
 			
 			def wrapper_for(content_type)
@@ -91,9 +91,7 @@ module Async
 				end
 			end
 			
-			def process_response(response)
-				response.body = HTTP::InflateBody.for_response(response)
-				
+			def process_response(verb, reference, response)
 				content_type = response.headers['content-type']
 				
 				if wrapper = wrapper_for(content_type)
@@ -103,35 +101,22 @@ module Async
 				return response
 			end
 			
-			HTTP::Client::VERBS.each do |verb|
-				define_method(verb.downcase) do |payload = nil, **parameters, &block|
+			HTTP::VERBS.each do |verb|
+				define_method(verb.downcase) do |body = nil, **parameters|
 					reference = @reference.dup(nil, parameters)
 					
-					if body = prepare_body(payload)
-						body = HTTP::DeflateBody.for_request(@headers, body)
-					end
-					
-					response = self.request(verb, reference.to_str, @headers, body) do |response|
-						process_response(response)
-					end
-					
-					return response
+					self.request(verb, reference.to_str, @headers, body)
 				end
 			end
 			
-			def request(verb, location, *args)
-				@max_redirects.times do
-					@client.request(verb, location, *args) do |response|
-						if response.redirection?
-							verb = 'GET' unless response.preserve_method?
-							location = response.headers['location']
-						else
-							return yield response
-						end
-					end
-				end
+			def request(verb, location, headers = {}, payload = nil)
+				body = @wrapper.wrap_request(headers, payload) || []
 				
-				raise ArgumentError.new("Too many redirections!")
+				response = @client.request(verb, location, headers, body)
+				
+				@wrapper.wrap_response(response)
+				
+				return response
 			end
 		end
 	end

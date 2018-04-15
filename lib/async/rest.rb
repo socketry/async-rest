@@ -18,4 +18,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require "async/rest/version"
+require_relative 'rest/version'
+require_relative 'rest/reference'
+require_relative 'rest/resource'
