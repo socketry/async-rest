@@ -22,41 +22,43 @@ require 'json'
 
 module Async
 	module REST
-		class JSONBody
-			def self.wrap_request(headers, payload)
-				headers['accept'] = 'application/json;q=0.9, */*;q=0.8'
-				
-				if payload
-					headers['content-type'] = 'application/json'
+		module Body
+			class JSON < Async::HTTP::Body::Wrapper
+				def self.wrap_request(headers, payload)
+					headers['accept'] = 'application/json;q=0.9, */*;q=0.8'
 					
-					return [JSON.dump(payload)]
-				end
-			end
-			
-			def self.wrap_response(response)
-				if content_type = response.headers['content-type']
-					if content_type.start_with? 'application/json'
-						response.body = self.new(response.body)
+					if payload
+						headers['content-type'] = 'application/json'
+						
+						return [JSON.dump(payload)]
 					end
 				end
-			end
-			
-			def initialize(body)
-				@body = body
-			end
-			
-			def close
-				@body = @body.close
 				
-				return self
-			end
-			
-			def join
-				JSON.parse(@body.join, symbolize_names: true)
-			end
-			
-			def finished?
-				@body.finished?
+				def self.wrap_response(response)
+					if content_type = response.headers['content-type']
+						if content_type.start_with? 'application/json'
+							response.body = self.new(response.body)
+						end
+					end
+				end
+				
+				def initialize(body)
+					@body = body
+				end
+				
+				def close
+					@body = @body.close
+					
+					return self
+				end
+				
+				def join
+					::JSON.parse(@body.join, symbolize_names: true)
+				end
+				
+				def finished?
+					@body.finished?
+				end
 			end
 		end
 	end

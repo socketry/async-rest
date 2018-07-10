@@ -36,13 +36,11 @@ RSpec.describe Async::REST::Resource do
 	let(:body) {Async::HTTP::Body::Buffered.new(['{"foo": "bar"}'])}
 	
 	it "can get resource" do
-		response_body = body
-		
-		server = Async::HTTP::Server.new(endpoint) do |request, peer, address|
-			[
+		server = Async::HTTP::Server.for(endpoint) do |request|
+			Async::HTTP::Response[
 				200,
 				{'content-type' => 'application/json'},
-				response_body
+				body
 			]
 		end
 		
@@ -50,10 +48,9 @@ RSpec.describe Async::REST::Resource do
 			server.run
 		end
 		
-		
 		response = subject.get
 		expect(response).to be_success
-		expect(response.body).to be_kind_of Async::REST::JSONBody
+		expect(response.body).to be_kind_of Async::REST::Body::JSON
 		expect(response.read).to be == {foo: 'bar'}
 		
 		server_task.stop
@@ -63,11 +60,11 @@ RSpec.describe Async::REST::Resource do
 	it "can get compressed resource" do
 		response_body = body
 		
-		server = Async::HTTP::Server.new(endpoint) do |request, peer, address|
-			[
+		server = Async::HTTP::Server.for(endpoint) do |request|
+			Async::HTTP::Response[
 				200,
 				{'content-type' => 'application/json', 'content-encoding' => 'gzip'},
-				Async::HTTP::Body::Deflate.for(response_body)
+				Async::HTTP::Body::Deflate.for(body)
 			]
 		end
 		
@@ -77,9 +74,9 @@ RSpec.describe Async::REST::Resource do
 		
 		response = subject.get
 		expect(response).to be_success
-		expect(response.headers['content-encoding']).to be == 'gzip'
+		expect(response.headers['content-encoding']).to be == ['gzip']
 		
-		expect(response.body).to be_kind_of Async::REST::JSONBody
+		expect(response.body).to be_kind_of Async::REST::Body::JSON
 		expect(response.read).to be == {foo: 'bar'}
 		
 		server_task.stop

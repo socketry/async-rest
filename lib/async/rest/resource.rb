@@ -18,33 +18,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'reference'
-require_relative 'json_body'
+require_relative 'body/json'
 
 require 'async/http/client'
-require 'async/http/compressor'
+require 'async/http/accept_encoding'
+require 'async/http/reference'
 require 'async/http/url_endpoint'
 
 module Async
 	module REST
-		class Resource
-			def initialize(client, reference = Reference.parse, headers = {}, wrapper = JSONBody)
-				@client = client
+		class Resource < HTTP::Middleware
+			def initialize(client, reference = HTTP::Reference.parse, headers = {}, wrapper = Body::JSON)
+				super(client)
+				
 				@reference = reference
 				@headers = headers
 				@wrapper = wrapper
 			end
 			
-			def close
-				@client.close
-			end
-			
 			def self.connect(url)
 				endpoint = HTTP::URLEndpoint.parse(url)
 				
-				reference = Reference.parse(endpoint.url.request_uri)
+				reference = HTTP::Reference.parse(endpoint.url.request_uri)
 				
-				return HTTP::Compressor.new(HTTP::Client.new(endpoint)), reference
+				return HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
 			def self.for(url, *args)
@@ -75,20 +72,27 @@ module Async
 			
 			def wrapper_for(content_type)
 				if content_type == 'application/json'
-					return JSONBody
+					return Body::JSON
 				end
 			end
 			
-			def prepare_body(payload)
-				return [] if payload.nil?
+			def prepare_request(verb, payload, headers, **parameters)
+				headers = headers.dup
+				reference = @reference.dup(nil, parameters)
 				
-				content_type = @headers['content-type']
-				
-				if wrapper = wrapper_for(content_type)
-					return wrapper.dump(payload)
+				if payload
+					content_type = headers['content-type']
+					
+					if wrapper = wrapper_for(content_type)
+						body = wrapper.wrap_request(headers, payload)
+					else
+						raise ArgumentError.new("Unsure how to convert payload to #{content_type}!")
+					end
 				else
-					raise ArgumentError.new("Unsure how to convert payload to #{content_type}!")
+					body = nil
 				end
+				
+				HTTP::Request[verb, reference, headers, body]
 			end
 			
 			def process_response(verb, reference, response)
@@ -102,17 +106,13 @@ module Async
 			end
 			
 			HTTP::VERBS.each do |verb|
-				define_method(verb.downcase) do |body = nil, **parameters|
-					reference = @reference.dup(nil, parameters)
-					
-					self.request(verb, reference.to_str, @headers, body)
+				define_method(verb.downcase) do |payload = nil, headers = @headers, **parameters|
+					self.call(prepare_request(verb, payload, headers, **parameters))
 				end
 			end
 			
-			def request(verb, location, headers = {}, payload = nil)
-				body = @wrapper.wrap_request(headers, payload) || []
-				
-				response = @client.request(verb, location, headers, body)
+			def call(request)
+				response = super(request)
 				
 				@wrapper.wrap_response(response)
 				
