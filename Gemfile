@@ -8,6 +8,5 @@ group :development do
 end
 
 group :test do
-	gem 'simplecov'
-	gem 'coveralls', require: false
+	gem 'covered', require: 'covered/rspec' if RUBY_VERSION >= "2.6.0"
 end
