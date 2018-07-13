@@ -50,8 +50,7 @@ RSpec.describe Async::REST::Resource do
 		
 		response = subject.get
 		expect(response).to be_success
-		expect(response.body).to be_kind_of Async::REST::Body::JSON
-		expect(response.read).to be == {foo: 'bar'}
+		expect(response.body).to be == {foo: 'bar'}
 		
 		server_task.stop
 		subject.close
@@ -76,8 +75,7 @@ RSpec.describe Async::REST::Resource do
 		expect(response).to be_success
 		expect(response.headers['content-encoding']).to be == ['gzip']
 		
-		expect(response.body).to be_kind_of Async::REST::Body::JSON
-		expect(response.read).to be == {foo: 'bar'}
+		expect(response.body).to be == {foo: 'bar'}
 		
 		server_task.stop
 		subject.close

@@ -22,42 +22,30 @@ require 'json'
 
 module Async
 	module REST
-		module Body
-			class JSON < Async::HTTP::Body::Wrapper
-				def self.wrap_request(headers, payload)
-					headers['accept'] = 'application/json;q=0.9, */*;q=0.8'
+		module Middleware
+			class JSON < HTTP::Middleware
+				def call(request)
+					request.headers['accept'] = 'application/json;q=1, */*'
 					
-					if payload
+					if body = request.body
 						headers['content-type'] = 'application/json'
 						
-						return [JSON.dump(payload)]
+						request.body = HTTP::Body::Buffered.new([
+							::JSON.dump(body)
+						])
 					end
-				end
-				
-				def self.wrap_response(response)
-					if content_type = response.headers['content-type']
-						if content_type.start_with? 'application/json'
-							response.body = self.new(response.body)
+					
+					response = super
+					
+					if body = response.body
+						content_type = response.headers['content-type']
+						
+						if content_type == 'application/json'
+							response.body = ::JSON.parse(body.join, symbolize_names: true)
 						end
 					end
-				end
-				
-				def initialize(body)
-					@body = body
-				end
-				
-				def close
-					@body = @body.close
 					
-					return self
-				end
-				
-				def join
-					::JSON.parse(@body.join, symbolize_names: true)
-				end
-				
-				def finished?
-					@body.finished?
+					return response
 				end
 			end
 		end

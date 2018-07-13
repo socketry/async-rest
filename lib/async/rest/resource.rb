@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'body/json'
+require_relative 'middleware/json'
 
 require 'async/http/client'
 require 'async/http/accept_encoding'
@@ -28,12 +28,11 @@ require 'async/http/url_endpoint'
 module Async
 	module REST
 		class Resource < HTTP::Middleware
-			def initialize(client, reference = HTTP::Reference.parse, headers = {}, wrapper = Body::JSON)
+			def initialize(client, reference = HTTP::Reference.parse, headers = HTTP::Headers.new)
 				super(client)
 				
 				@reference = reference
 				@headers = headers
-				@wrapper = wrapper
 			end
 			
 			def self.connect(url)
@@ -44,10 +43,14 @@ module Async
 				return HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
-			def self.for(url, *args)
+			def self.wrap(client)
+				Middleware::JSON.new(client)
+			end
+			
+			def self.for(url, wrapper_klass = Middleware::JSON, *args)
 				client, reference = connect(url)
 				
-				resource = self.new(client, reference, *args)
+				resource = self.new(wrap(client), reference, *args)
 				
 				return resource unless block_given?
 				
@@ -70,53 +73,17 @@ module Async
 				self.class.new(@client, @reference, @headers.merge(headers))
 			end
 			
-			def wrapper_for(content_type)
-				if content_type == 'application/json'
-					return Body::JSON
-				end
-			end
-			
-			def prepare_request(verb, payload, headers, **parameters)
-				headers = headers.dup
+			def prepare_request(verb, body = nil, headers = nil, **parameters)
+				headers ||= @headers.dup
 				reference = @reference.dup(nil, parameters)
 				
-				if payload
-					content_type = headers['content-type']
-					
-					if wrapper = wrapper_for(content_type)
-						body = wrapper.wrap_request(headers, payload)
-					else
-						raise ArgumentError.new("Unsure how to convert payload to #{content_type}!")
-					end
-				else
-					body = nil
-				end
-				
-				HTTP::Request[verb, reference, headers, body]
-			end
-			
-			def process_response(verb, reference, response)
-				content_type = response.headers['content-type']
-				
-				if wrapper = wrapper_for(content_type)
-					response.body = wrapper.new(response.body)
-				end
-				
-				return response
+				return HTTP::Request[verb, reference, headers, body]
 			end
 			
 			HTTP::VERBS.each do |verb|
-				define_method(verb.downcase) do |payload = nil, headers = @headers, **parameters|
-					self.call(prepare_request(verb, payload, headers, **parameters))
+				define_method(verb.downcase) do |*args|
+					self.call(prepare_request(verb, *args))
 				end
-			end
-			
-			def call(request)
-				response = super(request)
-				
-				@wrapper.wrap_response(response)
-				
-				return response
 			end
 		end
 	end
