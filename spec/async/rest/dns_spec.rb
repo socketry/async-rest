@@ -18,36 +18,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'json'
+require 'async/http/server'
+require 'async/http/url_endpoint'
+require 'async/rest/resource'
 
-module Async
-	module REST
-		module Middleware
-			class JSON < HTTP::Middleware
-				def call(request)
-					request.headers['accept'] = 'application/json;q=1, */*'
-					
-					if body = request.body
-						headers['content-type'] = 'application/json'
-						
-						request.body = HTTP::Body::Buffered.new([
-							::JSON.dump(body)
-						])
-					end
-					
-					response = super
-					
-					if body = response.body
-						content_type = response.headers['content-type']
-						
-						if content_type == 'application/json'
-							response.body = ::JSON.parse(body.join, symbolize_names: true)
-						end
-					end
-					
-					return response
-				end
-			end
-		end
+RSpec.describe Async::REST::Resource do
+	include_context Async::RSpec::Reactor
+	
+	let(:url) {'https://dns.google.com/resolve'}
+	subject{described_class.for(url, wrapper: Async::REST::Wrapper::JSON.new('application/dns-json'))}
+	
+	it "can get resource" do
+		response = subject.get(name: 'example.com', type: 'AAAA')
+		
+		expect(response).to be_success
+		
+		payload = response.read
+		expect(payload).to include(:Question, :Answer)
+		
+		subject.close
 	end
 end

@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'middleware/json'
+require_relative 'wrapper/json'
 
 require 'async/http/client'
 require 'async/http/accept_encoding'
@@ -28,11 +28,12 @@ require 'async/http/url_endpoint'
 module Async
 	module REST
 		class Resource < HTTP::Middleware
-			def initialize(client, reference = HTTP::Reference.parse, headers = HTTP::Headers.new)
+			def initialize(client, reference = HTTP::Reference.parse, headers = HTTP::Headers.new, wrapper = Wrapper::JSON.new)
 				super(client)
 				
 				@reference = reference
 				@headers = headers
+				@wrapper = wrapper
 			end
 			
 			def self.connect(url)
@@ -43,14 +44,10 @@ module Async
 				return HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
-			def self.wrap(client)
-				Middleware::JSON.new(client)
-			end
-			
-			def self.for(url, wrapper_klass = Middleware::JSON, *args)
+			def self.for(url, *args)
 				client, reference = connect(url)
 				
-				resource = self.new(wrap(client), reference, *args)
+				resource = self.new(client, reference, *args)
 				
 				return resource unless block_given?
 				
@@ -66,23 +63,32 @@ module Async
 			attr :headers
 			
 			def self.nest(parent, path = nil, *args)
-				self.new(*args, parent.client, parent.reference.dup(path), parent.headers)
+				self.new(*args, parent.client, parent.reference.dup(path), parent.headers, parent.wrapper)
 			end
 			
 			def with(**headers)
-				self.class.new(@client, @reference, @headers.merge(headers))
+				self.class.new(@client, @reference, @headers.merge(headers), @wrapper)
 			end
 			
-			def prepare_request(verb, body = nil, headers = nil, **parameters)
+			def prepare_request(verb, payload = nil, headers = nil, **parameters)
 				headers ||= @headers.dup
 				reference = @reference.dup(nil, parameters)
+				body = @wrapper.prepare_request(payload, headers)
 				
 				return HTTP::Request[verb, reference, headers, body]
 			end
 			
+			def process_response(response)
+				@wrapper.process_response(response)
+			end
+			
 			HTTP::VERBS.each do |verb|
 				define_method(verb.downcase) do |*args|
-					self.call(prepare_request(verb, *args))
+					request = prepare_request(verb, *args)
+					
+					response = self.call(request)
+					
+					process_response(response)
 				end
 			end
 		end

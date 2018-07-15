@@ -1,6 +1,4 @@
-#!/usr/bin/env ruby
-
-# Copyright, 2012, by Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2018, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +48,8 @@ RSpec.describe Async::REST::Resource do
 		
 		response = subject.get
 		expect(response).to be_success
-		expect(response.body).to be == {foo: 'bar'}
+		
+		expect(response.read).to be == {foo: 'bar'}
 		
 		server_task.stop
 		subject.close
@@ -75,7 +74,7 @@ RSpec.describe Async::REST::Resource do
 		expect(response).to be_success
 		expect(response.headers['content-encoding']).to be == ['gzip']
 		
-		expect(response.body).to be == {foo: 'bar'}
+		expect(response.read).to be == {foo: 'bar'}
 		
 		server_task.stop
 		subject.close

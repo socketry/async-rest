@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
 	spec.authors       = ["Samuel Williams"]
 	spec.email         = ["samuel.williams@oriontransfer.co.nz"]
 
-	spec.summary       = "A library for RESTful clients and servers."
+	spec.summary       = "A library for RESTful clients (and hopefully servers)."
 	spec.homepage      = "https://github.com/socketry/async-rest"
 
 	spec.files         = `git ls-files -z`.split("\x0").reject do |f|
@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 	spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
 	spec.require_paths = ["lib"]
 	
-	spec.add_dependency("async-http", "~> 0.27.11")
+	spec.add_dependency "async-http", "~> 0.27.12"
 	
 	spec.add_development_dependency "async-rspec", "~> 1.1"
 	
