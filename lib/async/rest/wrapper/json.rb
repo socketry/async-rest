@@ -20,13 +20,17 @@
 
 require 'json'
 
+require 'async/http/body/wrapper'
+require 'async/http/body/buffered'
+
 module Async
 	module REST
 		module Wrapper
 			class JSON
-				CONTENT_TYPE = "application/json".freeze
+				APPLICATION_JSON = "application/json".freeze
+				APPLICATION_JSON_STREAM = "application/json; boundary=NL".freeze
 				
-				def initialize(content_type = CONTENT_TYPE)
+				def initialize(content_type = APPLICATION_JSON)
 					@content_type = content_type
 				end
 				

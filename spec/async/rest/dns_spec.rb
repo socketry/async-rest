@@ -26,7 +26,7 @@ RSpec.describe Async::REST::Resource do
 	include_context Async::RSpec::Reactor
 	
 	let(:url) {'https://dns.google.com/resolve'}
-	subject{described_class.for(url, wrapper: Async::REST::Wrapper::JSON.new('application/dns-json'))}
+	subject{described_class.for(url, {}, Async::REST::Wrapper::JSON.new('application/dns-json'))}
 	
 	it "can get resource" do
 		response = subject.get(name: 'example.com', type: 'AAAA')

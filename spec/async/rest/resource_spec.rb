@@ -72,7 +72,7 @@ RSpec.describe Async::REST::Resource do
 		
 		response = subject.get
 		expect(response).to be_success
-		expect(response.headers['content-encoding']).to be == ['gzip']
+		expect(response.headers).to_not include('content-encoding')
 		
 		expect(response.read).to be == {foo: 'bar'}
 		

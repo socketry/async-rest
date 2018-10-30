@@ -28,8 +28,12 @@ require 'async/http/url_endpoint'
 module Async
 	module REST
 		class Resource < HTTP::Middleware
-			def initialize(client, reference = HTTP::Reference.parse, headers = HTTP::Headers.new, wrapper = Wrapper::JSON.new)
-				super(client)
+			# @param delegate [Async::HTTP::Middleware] the delegate that will handle requests.
+			# @param reference [Async::HTTP::Reference] the base request path/parameters.
+			# @param headers [Async::HTTP::Headers] the default headers that will be supplied with the request.
+			# @param wrapper [#prepare_request, #process_response] the wrapper for encoding/decoding the request/response body.
+			def initialize(delegate, reference = HTTP::Reference.parse, headers = HTTP::Headers.new, wrapper = Wrapper::JSON.new)
+				super(delegate)
 				
 				@reference = reference
 				@headers = headers
@@ -39,8 +43,9 @@ module Async
 			def self.connect(url)
 				endpoint = HTTP::URLEndpoint.parse(url)
 				
-				reference = HTTP::Reference.parse(endpoint.url.request_uri)
+				reference = HTTP::Reference.parse(endpoint.path)
 				
+				# return HTTP::Client.new(endpoint), reference
 				return HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
@@ -58,16 +63,20 @@ module Async
 				end
 			end
 			
-			attr :client
 			attr :reference
 			attr :headers
+			attr :wrapper
 			
 			def self.nest(parent, path = nil, *args)
-				self.new(*args, parent.client, parent.reference.dup(path), parent.headers, parent.wrapper)
+				self.new(*args, parent.delegate, parent.reference.dup(path), parent.headers, parent.wrapper)
 			end
 			
-			def with(**headers)
-				self.class.new(@client, @reference, @headers.merge(headers), @wrapper)
+			def nest(path, *args)
+				self.class.nest(self, path, *args)
+			end
+			
+			def with(headers)
+				self.class.new(@delegate, @reference, @headers.merge(headers), @wrapper)
 			end
 			
 			def prepare_request(verb, payload = nil, headers = nil, **parameters)
