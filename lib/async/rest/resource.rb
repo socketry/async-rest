@@ -67,22 +67,28 @@ module Async
 			attr :headers
 			attr :wrapper
 			
-			def self.nest(parent, path = nil, *args)
-				self.new(*args, parent.delegate, parent.reference.dup(path), parent.headers, parent.wrapper)
+			def self.with(parent, *args, headers: {}, parameters: nil, path: nil, wrapper: parent.wrapper)
+				self.new(*args, parent.delegate, parent.reference.dup(path, parameters), parent.headers.merge(headers), wrapper)
 			end
 			
-			def nest(path, *args)
-				self.class.nest(self, path, *args)
+			def with(*args, **options)
+				self.class.with(self, *args, **options)
 			end
 			
-			def with(headers)
-				self.class.new(@delegate, @reference, @headers.merge(headers), @wrapper)
-			end
-			
-			def prepare_request(verb, payload = nil, headers = nil, **parameters)
-				headers ||= @headers.dup
-				reference = @reference.dup(nil, parameters)
-				body = @wrapper.prepare_request(payload, headers)
+			def prepare_request(verb, payload = nil, **parameters)
+				if parameters.empty?
+					reference = @reference
+				else
+					reference = @reference.dup(nil, parameters)
+				end
+				
+				headers = @headers.dup
+				
+				if payload
+					body = @wrapper.prepare_request(payload, headers)
+				else
+					body = nil
+				end
 				
 				return HTTP::Request[verb, reference, headers, body]
 			end
