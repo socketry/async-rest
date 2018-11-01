@@ -28,7 +28,24 @@ Or install it yourself as:
 
 ## Usage
 
-...
+### GET a remote resource
+
+```ruby
+require 'async'
+require 'async/rest/resource'
+
+API_URL = "https://reqres.in/api"
+
+Async.run do
+	api = Async::REST::Resource.for(API_URL)
+	
+	response = api.with(path: "users").get(page: 2)
+	
+	pp response.read
+	
+	api.close
+end
+```
 
 ## Contributing
 
