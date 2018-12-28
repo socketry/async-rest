@@ -18,8 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'wrapper/json'
-
+require 'async'
 require 'async/http/client'
 require 'async/http/accept_encoding'
 require 'async/http/reference'
@@ -27,17 +26,16 @@ require 'async/http/url_endpoint'
 
 module Async
 	module REST
+		# The key abstraction of information in REST is a resource. Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource. A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.
 		class Resource < HTTP::Middleware
 			# @param delegate [Async::HTTP::Middleware] the delegate that will handle requests.
-			# @param reference [Async::HTTP::Reference] the base request path/parameters.
+			# @param reference [Async::HTTP::Reference] the resource identifier (base request path/parameters).
 			# @param headers [Async::HTTP::Headers] the default headers that will be supplied with the request.
-			# @param wrapper [#prepare_request, #process_response] the wrapper for encoding/decoding the request/response body.
-			def initialize(delegate, reference = HTTP::Reference.parse, headers = HTTP::Headers.new, wrapper = Wrapper::JSON.new)
+			def initialize(delegate, reference = HTTP::Reference.parse, headers = HTTP::Headers.new)
 				super(delegate)
 				
 				@reference = reference
 				@headers = headers
-				@wrapper = wrapper
 			end
 			
 			def self.connect(url)
@@ -56,55 +54,50 @@ module Async
 				
 				return resource unless block_given?
 				
-				begin
-					yield resource
-				ensure
-					resource.close
+				Async.run do
+					begin
+						yield resource
+					ensure
+						resource.close
+					end
 				end
 			end
 			
 			attr :reference
 			attr :headers
-			attr :wrapper
 			
-			def self.with(parent, *args, headers: {}, parameters: nil, path: nil, wrapper: parent.wrapper)
-				self.new(*args, parent.delegate, parent.reference.dup(path, parameters), parent.headers.merge(headers), wrapper)
+			def self.with(parent, *args, headers: {}, parameters: nil, path: nil)
+				self.new(*args, parent.delegate, parent.reference.dup(path, parameters), parent.headers.merge(headers))
 			end
 			
 			def with(*args, **options)
 				self.class.with(self, *args, **options)
 			end
 			
-			def prepare_request(verb, payload = nil, **parameters)
-				if parameters.empty?
-					reference = @reference
-				else
-					reference = @reference.dup(nil, parameters)
-				end
-				
-				headers = @headers.dup
-				
+			def get(klass = Representation, **parameters)
+				klass.new(self.with(parameters: parameters)).tap(&:value)
+			end
+			
+			# @param verb [String] the HTTP verb to use.
+			# @param payload [Object] the object which will used to generate the body of the request.
+			def prepare_request(verb, payload)
 				if payload
-					body = @wrapper.prepare_request(payload, headers)
+					headers = @headers.dup
+					body = yield payload, headers
 				else
+					headers = @headers
 					body = nil
 				end
 				
-				return HTTP::Request[verb, reference, headers, body]
+				return HTTP::Request[verb, @reference, headers, body]
 			end
 			
-			def process_response(response)
-				@wrapper.process_response(response)
+			def inspect
+				"\#<#{self.class} #{@reference.inspect} #{@headers.inspect}>"
 			end
 			
-			HTTP::VERBS.each do |verb|
-				define_method(verb.downcase) do |*args|
-					request = prepare_request(verb, *args)
-					
-					response = self.call(request)
-					
-					process_response(response)
-				end
+			def to_s
+				"\#<#{self.class} #{@reference.to_s}>"
 			end
 		end
 	end

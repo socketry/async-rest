@@ -46,18 +46,14 @@ RSpec.describe Async::REST::Resource do
 			server.run
 		end
 		
-		response = subject.get
-		expect(response).to be_success
-		
-		expect(response.read).to be == {foo: 'bar'}
+		representation = subject.get
+		expect(representation.value).to be == {foo: 'bar'}
 		
 		server_task.stop
 		subject.close
 	end
 	
 	it "can get compressed resource" do
-		response_body = body
-		
 		server = Async::HTTP::Server.for(endpoint) do |request|
 			Async::HTTP::Response[
 				200,
@@ -70,11 +66,9 @@ RSpec.describe Async::REST::Resource do
 			server.run
 		end
 		
-		response = subject.get
-		expect(response).to be_success
-		expect(response.headers).to_not include('content-encoding')
-		
-		expect(response.read).to be == {foo: 'bar'}
+		representation = subject.get
+		expect(representation.metadata).to_not include('content-encoding')
+		expect(representation.value).to be == {foo: 'bar'}
 		
 		server_task.stop
 		subject.close

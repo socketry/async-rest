@@ -44,17 +44,22 @@ module Async
 					if payload
 						headers['content-type'] = @content_type
 						
+						# TODO dump incrementally to IO?
 						HTTP::Body::Buffered.new([
 							::JSON.dump(payload)
 						])
 					end
 				end
 				
-				def process_response(response)
-					# We expect all responses to be valid JSON.
-					# I tried inspecting content-type, but too many servers do the wrong thing.
-					if body = response.body
-						response.body = Parser.new(body)
+				def process_response(request, response)
+					if content_type = response.headers['content-type']
+						if content_type.start_with? @content_type
+							if body = response.body
+								response.body = Parser.new(body)
+							end
+						else
+							warn "Unknown content type: #{content_type}!"
+						end
 					end
 					
 					return response

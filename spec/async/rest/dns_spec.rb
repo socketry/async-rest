@@ -20,21 +20,38 @@
 
 require 'async/http/server'
 require 'async/http/url_endpoint'
+
 require 'async/rest/resource'
+require 'async/rest/representation'
+
+module DNS
+	class Query < Async::REST::Representation
+		def initialize(*args)
+			# This is the old/weird content-type used by Google's DNS resolver. It's obsolete.
+			super(*args, wrapper: Async::REST::Wrapper::JSON.new("application/x-javascript"))
+		end
+		
+		def question
+			value[:Question]
+		end
+		
+		def answer
+			value[:Answer]
+		end
+	end
+end
 
 RSpec.describe Async::REST::Resource do
 	include_context Async::RSpec::Reactor
 	
 	let(:url) {'https://dns.google.com/resolve'}
-	subject{described_class.for(url, {}, Async::REST::Wrapper::JSON.new('application/dns-json'))}
+	subject(:resource) {described_class.for(url)}
 	
 	it "can get resource" do
-		response = subject.get(name: 'example.com', type: 'AAAA')
+		# The first argument is the representation class to use:
+		query = resource.get(DNS::Query, name: 'example.com', type: 'AAAA')
 		
-		expect(response).to be_success
-		
-		payload = response.read
-		expect(payload).to include(:Question, :Answer)
+		expect(query.value).to include(:Question, :Answer)
 		
 		subject.close
 	end

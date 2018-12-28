@@ -1,6 +1,11 @@
 # Async::REST
 
-An asynchronous client and server implementation of RESTful interfaces.
+Roy Thomas Fielding's thesis [Architectural Styles and the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm) describes [Representational State Transfer](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) which comprises several core concepts:
+
+- `Resource`: A conceptual mapping to one or more entities.
+- `Representation`: An instance of a resource at a given point in time.
+
+This gem models these abstractions as closely and practically as possible and serves as a basis for building asynchronous web clients.
 
 [![Build Status](https://secure.travis-ci.org/socketry/async-rest.svg)](http://travis-ci.org/socketry/async-rest)
 [![Code Climate](https://codeclimate.com/github/socketry/async-rest.svg)](https://codeclimate.com/github/socketry/async-rest)
@@ -28,22 +33,43 @@ Or install it yourself as:
 
 ## Usage
 
-### GET a remote resource
+Generally speaking, you want to create a representation class for each endpoint. This class is responsible for negotiating content type and processing the response, and traversing related endpoints.
+
+### DNS over HTTP
+
+This simple example shows how to use a custom representation to access DNS over HTTP.
 
 ```ruby
-require 'async'
+require 'async/http/server'
+require 'async/http/url_endpoint'
+
 require 'async/rest/resource'
+require 'async/rest/representation'
 
-API_URL = "https://reqres.in/api"
+module DNS
+	class Query < Async::REST::Representation
+		def initialize(*args)
+			# This is the old/weird content-type used by Google's DNS resolver. It's obsolete.
+			super(*args, wrapper: Async::REST::Wrapper::JSON.new("application/x-javascript"))
+		end
+		
+		def question
+			value[:Question]
+		end
+		
+		def answer
+			value[:Answer]
+		end
+	end
+end
 
-Async.run do
-	api = Async::REST::Resource.for(API_URL)
-	
-	response = api.with(path: "users").get(page: 2)
-	
-	pp response.read
-	
-	api.close
+URL = 'https://dns.google.com/resolve'
+Async::REST::Resource.for(URL) do |resource|
+	# Specify the representation class as the first argument (client side negotiation):
+	query = resource.get(DNS::Query, name: 'example.com', type: 'AAAA')
+
+	pp query.metadata
+	pp query.value
 end
 ```
 
