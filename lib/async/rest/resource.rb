@@ -67,7 +67,9 @@ module Async
 			attr :headers
 			
 			def self.with(parent, *args, headers: {}, parameters: nil, path: nil)
-				self.new(*args, parent.delegate, parent.reference.dup(path, parameters), parent.headers.merge(headers))
+				reference = parent.reference.dup(path, parameters)
+				
+				self.new(*args, parent.delegate, reference, parent.headers.merge(headers))
 			end
 			
 			def with(*args, **options)

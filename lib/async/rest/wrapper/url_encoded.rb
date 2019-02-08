@@ -26,11 +26,10 @@ require 'async/http/body/buffered'
 module Async
 	module REST
 		module Wrapper
-			class JSON
-				APPLICATION_JSON = "application/json".freeze
-				APPLICATION_JSON_STREAM = "application/json; boundary=NL".freeze
+			class URLEncoded
+				APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded".freeze
 				
-				def initialize(content_type = APPLICATION_JSON)
+				def initialize(content_type = APPLICATION_FORM_URLENCODED)
 					@content_type = content_type
 				end
 				
@@ -46,9 +45,8 @@ module Async
 					if payload
 						headers['content-type'] = @content_type
 						
-						# TODO dump incrementally to IO?
 						HTTP::Body::Buffered.new([
-							::JSON.dump(payload)
+							::HTTP::Protocol::URL.encode(payload)
 						])
 					end
 				end
@@ -69,7 +67,7 @@ module Async
 				
 				class Parser < HTTP::Body::Wrapper
 					def join
-						::JSON.parse(super, symbolize_names: true)
+						::HTTP::Protocol::URL.decode(super, symbolize_keys: true)
 					end
 				end
 			end
