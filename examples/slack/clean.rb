@@ -45,7 +45,7 @@ Async::REST::Resource.for(URL) do |resource|
 			response = message_delete.post
 			if rate_limited?(response.read)
 				puts "Rate limiting..."
-				Async::Task.current.sleep 1
+				Async::Task.current.sleep 2
 			end
 		end
 		
