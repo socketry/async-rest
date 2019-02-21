@@ -9,7 +9,7 @@ def rate_limited?(response)
 	response[:error] == "ratelimited"
 end
 
-require 'async/rest/resource'
+require 'async/rest'
 
 URL = "https://slack.com/api"
 TOKEN = "xoxp-your-api-token"

@@ -19,4 +19,4 @@
 # THE SOFTWARE.
 
 require_relative 'rest/version'
-require_relative 'rest/resource'
+require_relative 'rest/representation'
