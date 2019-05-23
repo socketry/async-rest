@@ -65,7 +65,7 @@ module Async
 				@wrapper.process_response(request, response)
 			end
 			
-			HTTP::VERBS.each do |verb|
+			::Protocol::HTTP::Methods.each do |name, verb|
 				# TODO when Ruby 3.0 lands, convert this to |payload = nil, **parameters|
 				# Blocked by https://bugs.ruby-lang.org/issues/14183
 				define_method(verb.downcase) do |payload = nil|

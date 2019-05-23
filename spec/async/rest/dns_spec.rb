@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 require 'async/http/server'
-require 'async/http/url_endpoint'
+require 'async/http/endpoint'
 
 require 'async/rest/resource'
 require 'async/rest/representation'

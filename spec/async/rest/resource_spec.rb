@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 require 'async/http/server'
-require 'async/http/url_endpoint'
+require 'async/http/endpoint'
 require 'async/rest/resource'
 
 RSpec.describe Async::REST::Resource do
@@ -29,13 +29,13 @@ RSpec.describe Async::REST::Resource do
 	
 	subject{described_class.for(url)}
 	
-	let(:endpoint) {Async::HTTP::URLEndpoint.parse(url)}
+	let(:endpoint) {Async::HTTP::Endpoint.parse(url)}
 	
 	let(:body) {Async::HTTP::Body::Buffered.new(['{"foo": "bar"}'])}
 	
 	it "can get resource" do
 		server = Async::HTTP::Server.for(endpoint) do |request|
-			Async::HTTP::Response[
+			Protocol::HTTP::Response[
 				200,
 				{'content-type' => 'application/json'},
 				body
@@ -55,10 +55,10 @@ RSpec.describe Async::REST::Resource do
 	
 	it "can get compressed resource" do
 		server = Async::HTTP::Server.for(endpoint) do |request|
-			Async::HTTP::Response[
+			Protocol::HTTP::Response[
 				200,
 				{'content-type' => 'application/json', 'content-encoding' => 'gzip'},
-				Async::HTTP::Body::Deflate.for(body)
+				Protocol::HTTP::Body::Deflate.for(body)
 			]
 		end
 		

@@ -20,8 +20,8 @@
 
 require 'json'
 
-require 'async/http/body/wrapper'
-require 'async/http/body/buffered'
+require 'protocol/http/body/wrapper'
+require 'protocol/http/body/buffered'
 
 module Async
 	module REST
@@ -45,7 +45,7 @@ module Async
 					if payload
 						headers['content-type'] = @content_type
 						
-						HTTP::Body::Buffered.new([
+						::Protocol::HTTP::Body::Buffered.new([
 							::Protocol::HTTP::URL.encode(payload)
 						])
 					end
@@ -65,7 +65,7 @@ module Async
 					return response
 				end
 				
-				class Parser < HTTP::Body::Wrapper
+				class Parser < ::Protocol::HTTP::Body::Wrapper
 					def join
 						::Protocol::HTTP::URL.decode(super, symbolize_keys: true)
 					end

@@ -20,8 +20,8 @@
 
 require 'json'
 
-require 'async/http/body/wrapper'
-require 'async/http/body/buffered'
+require 'protocol/http/body/wrapper'
+require 'protocol/http/body/buffered'
 
 module Async
 	module REST

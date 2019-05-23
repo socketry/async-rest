@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 require 'async/http/server'
-require 'async/http/url_endpoint'
+require 'async/http/endpoint'
 require 'async/rest/resource'
 
 RSpec.shared_examples_for Async::REST::Wrapper do
@@ -28,13 +28,13 @@ RSpec.shared_examples_for Async::REST::Wrapper do
 	let(:url) {'http://127.0.0.1:9296/'}
 	
 	let(:representation) {Async::REST::Representation.for(url, wrapper: subject)}
-	let(:endpoint) {Async::HTTP::URLEndpoint.parse(url)}
+	let(:endpoint) {Async::HTTP::Endpoint.parse(url)}
 	
 	let(:server) do
 		Async::HTTP::Server.for(endpoint) do |request|
 			if request.headers['content-type'] == subject.content_type
 				# Echo it back:
-				Async::HTTP::Response[200, request.headers, request.body]
+				Protocol::HTTP::Response[200, request.headers, request.body]
 			end
 		end
 	end

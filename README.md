@@ -41,7 +41,7 @@ This simple example shows how to use a custom representation to access DNS over 
 
 ```ruby
 require 'async/http/server'
-require 'async/http/url_endpoint'
+require 'async/http/endpoint'
 
 require 'async/rest/resource'
 require 'async/rest/representation'

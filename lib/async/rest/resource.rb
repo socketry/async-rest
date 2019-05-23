@@ -20,18 +20,19 @@
 
 require 'async'
 require 'async/http/client'
-require 'async/http/accept_encoding'
-require 'async/http/reference'
-require 'async/http/url_endpoint'
+require 'async/http/endpoint'
+
+require 'protocol/http/accept_encoding'
+require 'protocol/http/reference'
 
 module Async
 	module REST
 		# The key abstraction of information in REST is a resource. Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource. A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.
-		class Resource < HTTP::Middleware
+		class Resource < ::Protocol::HTTP::Middleware
 			# @param delegate [Async::HTTP::Middleware] the delegate that will handle requests.
 			# @param reference [Async::HTTP::Reference] the resource identifier (base request path/parameters).
-			# @param headers [Async::HTTP::Headers] the default headers that will be supplied with the request.
-			def initialize(delegate, reference = HTTP::Reference.parse, headers = HTTP::Headers.new)
+			# @param headers [::Protocol::HTTP::Headers] the default headers that will be supplied with the request.
+			def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers = ::Protocol::HTTP::Headers.new)
 				super(delegate)
 				
 				@reference = reference
@@ -39,12 +40,12 @@ module Async
 			end
 			
 			def self.connect(url)
-				endpoint = HTTP::URLEndpoint.parse(url)
+				endpoint = HTTP::Endpoint.parse(url)
 				
-				reference = HTTP::Reference.parse(endpoint.path)
+				reference = ::Protocol::HTTP::Reference.parse(endpoint.path)
 				
 				# return HTTP::Client.new(endpoint), reference
-				return HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
+				return ::Protocol::HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
 			def self.for(url, *args)
@@ -91,7 +92,7 @@ module Async
 					body = nil
 				end
 				
-				return HTTP::Request[verb, @reference, headers, body]
+				return ::Protocol::HTTP::Request[verb, @reference, headers, body]
 			end
 			
 			def inspect
