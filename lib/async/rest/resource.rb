@@ -30,7 +30,7 @@ module Async
 		# The key abstraction of information in REST is a resource. Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource. A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.
 		class Resource < ::Protocol::HTTP::Middleware
 			# @param delegate [Async::HTTP::Middleware] the delegate that will handle requests.
-			# @param reference [Async::HTTP::Reference] the resource identifier (base request path/parameters).
+			# @param reference [::Protocol::HTTP::Reference] the resource identifier (base request path/parameters).
 			# @param headers [::Protocol::HTTP::Headers] the default headers that will be supplied with the request.
 			def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers = ::Protocol::HTTP::Headers.new)
 				super(delegate)
@@ -44,7 +44,6 @@ module Async
 				
 				reference = ::Protocol::HTTP::Reference.parse(endpoint.path)
 				
-				# return HTTP::Client.new(endpoint), reference
 				return ::Protocol::HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
@@ -67,8 +66,8 @@ module Async
 			attr :reference
 			attr :headers
 			
-			def self.with(parent, *args, headers: {}, parameters: nil, path: nil)
-				reference = parent.reference.dup(path, parameters)
+			def self.with(parent, *args, headers: {}, **options)
+				reference = parent.reference.with(**options)
 				
 				self.new(*args, parent.delegate, reference, parent.headers.merge(headers))
 			end
