@@ -26,11 +26,9 @@ RSpec.describe Async::REST::Resource do
 	include_context Async::RSpec::Reactor
 	
 	let(:url) {'http://127.0.0.1:9295'}
-	
 	subject{described_class.for(url)}
 	
 	let(:endpoint) {Async::HTTP::Endpoint.parse(url)}
-	
 	let(:body) {Async::HTTP::Body::Buffered.new(['{"foo": "bar"}'])}
 	
 	it "can get resource" do
@@ -72,5 +70,10 @@ RSpec.describe Async::REST::Resource do
 		
 		server_task.stop
 		subject.close
+	end
+	
+	it "can compute nested path" do
+		user = subject.with(path: "users/5")
+		expect(user.reference.path).to be == "/users/5"
 	end
 end
