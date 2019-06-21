@@ -53,24 +53,28 @@ module Async
 					end
 				end
 				
-				def process_response(request, response)
-					if content_type = response.headers['content-type']
-						if content_type.start_with? @content_type
-							if body = response.body
-								response.body = Parser.new(body)
-							end
-						else
-							warn "Unknown content type: #{content_type}!"
-						end
-					end
-					
-					return response
-				end
-				
 				class Parser < ::Protocol::HTTP::Body::Wrapper
 					def join
 						::Protocol::HTTP::URL.decode(super, symbolize_keys: true)
 					end
+				end
+				
+				def wrap_response(response)
+					if body = response.body
+						response.body = Parser.new(body)
+					end
+				end
+				
+				def process_response(request, response)
+					if content_type = response.headers['content-type']
+						if content_type.start_with? @content_type
+							wrap_response(response)
+						else
+							raise Error, "Unknown content type: #{content_type}!"
+						end
+					end
+					
+					return response
 				end
 			end
 		end

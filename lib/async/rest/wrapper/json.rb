@@ -55,24 +55,28 @@ module Async
 					end
 				end
 				
+				class Parser < HTTP::Body::Wrapper
+					def join
+						::JSON.parse(super, symbolize_names: true)
+					end
+				end
+				
+				def wrap_response(response)
+					if body = response.body
+						response.body = Parser.new(body)
+					end
+				end
+				
 				def process_response(request, response)
 					if content_type = response.headers['content-type']
 						if content_type.start_with? @content_type
-							if body = response.body
-								response.body = Parser.new(body)
-							end
+							wrap_response(response)
 						else
 							raise Error, "Unknown content type: #{content_type}!"
 						end
 					end
 					
 					return response
-				end
-				
-				class Parser < HTTP::Body::Wrapper
-					def join
-						::JSON.parse(super, symbolize_names: true)
-					end
 				end
 			end
 		end
