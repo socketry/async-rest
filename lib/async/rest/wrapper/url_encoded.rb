@@ -23,10 +23,12 @@ require 'json'
 require 'protocol/http/body/wrapper'
 require 'protocol/http/body/buffered'
 
+require_relative 'generic'
+
 module Async
 	module REST
 		module Wrapper
-			class URLEncoded
+			class URLEncoded < Generic
 				APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded".freeze
 				
 				def initialize(content_type = APPLICATION_FORM_URLENCODED)

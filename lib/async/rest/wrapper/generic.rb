@@ -1,4 +1,4 @@
-# Copyright, 2018, by Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2019, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,21 @@
 
 module Async
 	module REST
-		class Error < StandardError
-		end
-		
-		class RequestFailure < Error
+		module Wrapper
+			class Generic
+				# @param payload [Object] a request payload to send.
+				# @param headers [Protocol::HTTP::Headers] the mutable HTTP headers for the request.
+				# @return [Body | nil] an optional request body based on the given payload.
+				def prepare_request(payload, headers)
+				end
+				
+				# @param request [Protocol::HTTP::Request] the request that was made.
+				# @param response [Protocol::HTTP::Response] the response that was received.
+				# @return [Object] some application specific representation of the response.
+				def process_response(request, response)
+					return response
+				end
+			end
 		end
 	end
 end

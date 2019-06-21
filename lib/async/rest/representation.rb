@@ -24,9 +24,6 @@ require_relative 'wrapper/json'
 
 module Async
 	module REST
-		class RequestFailure < Error
-		end
-		
 		# REST components perform actions on a resource by using a representation to capture the current or intended state of that resource and transferring that representation between components. A representation is a sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less precise names for a representation include: document, file, and HTTP message entity, instance, or variant.
 		# 
 		# A representation consists of data, metadata describing the data, and, on occasion, metadata to describe the metadata (usually for the purpose of verifying message integrity). Metadata is in the form of name-value pairs, where the name corresponds to a standard that defines the value's structure and semantics. Response messages may include both representation metadata and resource metadata: information about the resource that is not specific to the supplied representation.
@@ -47,8 +44,12 @@ module Async
 				@value = value
 			end
 			
-			def with(**parameters)
-				self.class.new(@resource.with(parameters: parameters), wrapper: @wrapper)
+			def with(klass = self.class, **options)
+				klass.new(@resource.with(**options), wrapper: @wrapper)
+			end
+			
+			def [] **parameters
+				self.with(parameters: parameters)
 			end
 			
 			def close
@@ -87,8 +88,12 @@ module Async
 					@metadata = response.headers
 					@value = response.read
 				else
-					raise RequestFailure, "Could not fetch remote resource #{@resource}: #{response.status}!"
+					
 				end
+			end
+			
+			def value?
+				!@value.nil?
 			end
 			
 			def value
@@ -96,11 +101,27 @@ module Async
 			end
 			
 			def value= value
-				if @value = value
+				@value = self.assign(value)
+			end
+			
+			def call(value)
+				if value
 					self.post(value)
 				else
 					self.delete
 				end
+			end
+			
+			def assign(value)
+				response = self.call(value)
+				
+				response.read
+				
+				return @value
+			end
+			
+			def update
+				@value = assign(@value)
 			end
 			
 			def inspect

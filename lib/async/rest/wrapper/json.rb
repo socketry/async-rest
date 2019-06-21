@@ -23,10 +23,12 @@ require 'json'
 require 'protocol/http/body/wrapper'
 require 'protocol/http/body/buffered'
 
+require_relative 'generic'
+
 module Async
 	module REST
 		module Wrapper
-			class JSON
+			class JSON < Generic
 				APPLICATION_JSON = "application/json".freeze
 				APPLICATION_JSON_STREAM = "application/json; boundary=NL".freeze
 				
@@ -60,7 +62,7 @@ module Async
 								response.body = Parser.new(body)
 							end
 						else
-							warn "Unknown content type: #{content_type}!"
+							raise Error, "Unknown content type: #{content_type}!"
 						end
 					end
 					
