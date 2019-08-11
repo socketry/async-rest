@@ -39,16 +39,19 @@ module Async
 				@headers = headers
 			end
 			
-			def self.connect(url)
-				endpoint = HTTP::Endpoint.parse(url)
-				
+			def self.connect(endpoint)
 				reference = ::Protocol::HTTP::Reference.parse(endpoint.path)
 				
 				return ::Protocol::HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
-			def self.for(url, *args)
-				client, reference = connect(url)
+			def self.for(endpoint, *args)
+				# TODO This behaviour is deprecated and will probably be removed.
+				if endpoint.is_a? String
+					endpoint = HTTP::Endpoint.parse(endpoint)
+				end
+				
+				client, reference = connect(endpoint)
 				
 				resource = self.new(client, reference, *args)
 				
