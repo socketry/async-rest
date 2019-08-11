@@ -26,7 +26,7 @@ Async::REST::Resource.for(URL) do |resource|
 		messages = representation.value[:messages]
 		matches = messages[:matches]
 		
-		puts "Found #{matches.count} messages on page #{page} out of #{messages[:total]}..."
+		puts "Found #{matches.size} messages on page #{page} out of #{messages[:total]}..."
 		
 		break if matches.empty?
 		
