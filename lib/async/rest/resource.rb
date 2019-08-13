@@ -39,6 +39,7 @@ module Async
 				@headers = headers
 			end
 			
+			# @param endpoint [Async::HTTP::Endpoint] used to connect to the remote system and specify the base path.
 			def self.connect(endpoint)
 				reference = ::Protocol::HTTP::Reference.parse(endpoint.path)
 				
