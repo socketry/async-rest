@@ -75,7 +75,14 @@ module Async
 					
 					response = @resource.call(request)
 					
-					process_response(request, response)
+					# If we exit this block because of an exception, we close the response. This ensures we don't have any dangling connections.
+					begin
+						return process_response(request, response)
+					rescue
+						response.close
+						
+						raise
+					end
 				end
 			end
 			
