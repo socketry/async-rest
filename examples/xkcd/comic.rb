@@ -50,10 +50,15 @@ module XKCD
 end
 
 Async do
-	URL = 'https://xkcd.com/2205/'
+	URL = 'https://xkcd.com/'
+	
 	Async::REST::Resource.for(URL) do |resource|
-		representation = resource.get(XKCD::Comic)
-		
-		p	representation.image_url
+		(2000..2010).each do |id|
+			Async do
+				representation = resource.with(path: "/#{id}/").get(XKCD::Comic)
+				
+				p representation.image_url
+			end
+		end
 	end
 end
