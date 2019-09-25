@@ -28,15 +28,25 @@ module Async
 		# 
 		# A representation consists of data, metadata describing the data, and, on occasion, metadata to describe the metadata (usually for the purpose of verifying message integrity). Metadata is in the form of name-value pairs, where the name corresponds to a standard that defines the value's structure and semantics. Response messages may include both representation metadata and resource metadata: information about the resource that is not specific to the supplied representation.
 		class Representation
+			def self.[] wrapper
+				klass = Class.new(Representation)
+				
+				klass.const_set(:WRAPPER, wrapper)
+				
+				return klass
+			end
+			
 			def self.for(*args, **options)
 				self.new(Resource.for(*args), **options)
 			end
+			
+			WRAPPER = Wrapper::JSON
 			
 			# @param resource [Resource] the RESTful resource that this representation is of.
 			# @param metadata [Hash | HTTP::Headers] the metadata associated wtih teh representation.
 			# @param value [Object] the value of the representation.
 			# @param wrapper [#prepare_request, #process_response] the wrapper for encoding/decoding the request/response body.
-			def initialize(resource, metadata: {}, value: nil, wrapper: Wrapper::JSON.new)
+			def initialize(resource, metadata: {}, value: nil, wrapper: self.class::WRAPPER.new)
 				@resource = resource
 				@wrapper = wrapper
 				
