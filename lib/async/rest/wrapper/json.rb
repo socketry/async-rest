@@ -48,7 +48,6 @@ module Async
 					if payload
 						headers['content-type'] = @content_type
 						
-						# TODO dump incrementally to IO?
 						HTTP::Body::Buffered.new([
 							::JSON.dump(payload)
 						])
@@ -61,10 +60,8 @@ module Async
 					end
 				end
 				
-				def wrap_response(response)
-					if body = response.body
-						response.body = Parser.new(body)
-					end
+				def wrap_response(response, klass = Parser)
+					super(response, klass)
 				end
 				
 				def process_response(request, response)

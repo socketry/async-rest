@@ -73,6 +73,7 @@ module Async
 				@resource.prepare_request(verb, payload, &@wrapper.method(:prepare_request))
 			end
 			
+			# If an exception propagates out of this method, the response will be closed.
 			def process_response(request, response)
 				@wrapper.process_response(request, response)
 			end

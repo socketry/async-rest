@@ -1,4 +1,4 @@
-# Copyright, 2019, by Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2018, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,28 +18,50 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require_relative 'json'
+require_relative 'url_encoded'
+
 module Async
 	module REST
 		module Wrapper
-			class Generic
-				# @param payload [Object] a request payload to send.
-				# @param headers [Protocol::HTTP::Headers] the mutable HTTP headers for the request.
-				# @return [Body | nil] an optional request body based on the given payload.
+			class Form < Generic
+				DEFAULT_CONTENT_TYPES = {
+					JSON::APPLICATION_JSON => JSON::Parser,
+					URLEncoded::APPLICATION_FORM_URLENCODED => URLEncoded::Parser,
+				}
+				
+				def initialize(content_types = DEFAULT_CONTENT_TYPES)
+					@content_types = content_types
+				end
+				
 				def prepare_request(payload, headers)
-				end
-				
-				# @param request [Protocol::HTTP::Request] the request that was made.
-				# @param response [Protocol::HTTP::Response] the response that was received.
-				# @return [Object] some application specific representation of the response.
-				def process_response(request, response)
-					return response
-				end
-				
-				# Wrap the response body in the given klass.
-				def wrap_response(response, klass)
-					if body = response.body
-						response.body = klass.new(body)
+					headers['accept'] ||= @content_types.keys
+					
+					if payload
+						headers['content-type'] = URLEncoded::APPLICATION_FORM_URLENCODED
+						
+						::Protocol::HTTP::Body::Buffered.new([
+							::Protocol::HTTP::URL.encode(payload)
+						])
 					end
+				end
+				
+				def parser_for(response)
+					if content_type = response.headers['content-type']
+						return @content_types[content_type]
+					end
+				end
+				
+				def process_response(request, response)
+					if body = response.body
+						if parser = parser_for(response)
+							wrap_response(response, parser)
+						else
+							raise Error, "Unsupported content type: #{content_type}!"
+						end
+					end
+					
+					return response
 				end
 			end
 		end

@@ -59,10 +59,8 @@ module Async
 					end
 				end
 				
-				def wrap_response(response)
-					if body = response.body
-						response.body = Parser.new(body)
-					end
+				def wrap_response(response, klass = Parser)
+					super(response, klass)
 				end
 				
 				def process_response(request, response)
