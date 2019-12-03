@@ -7,7 +7,7 @@ Roy Thomas Fielding's thesis [Architectural Styles and the Design of Network-bas
 
 This gem models these abstractions as closely and practically as possible and serves as a basis for building asynchronous web clients.
 
-[![Build Status](https://secure.travis-ci.org/socketry/async-rest.svg)](http://travis-ci.org/socketry/async-rest)
+[![Build Status](https://secure.travis-ci.com/socketry/async-rest.svg)](http://travis-ci.com/socketry/async-rest)
 [![Code Climate](https://codeclimate.com/github/socketry/async-rest.svg)](https://codeclimate.com/github/socketry/async-rest)
 [![Coverage Status](https://coveralls.io/repos/socketry/async-rest/badge.svg)](https://coveralls.io/r/socketry/async-rest)
 
@@ -33,7 +33,7 @@ Or install it yourself as:
 
 ## Usage
 
-Generally speaking, you want to create a representation class for each endpoint. This class is responsible for negotiating content type and processing the response, and traversing related endpoints.
+Generally speaking, you want to create a representation class for each remote resource. This class is responsible for negotiating content type and processing the response, and traversing related resources.
 
 ### DNS over HTTP
 
