@@ -60,20 +60,14 @@ module Async
 					end
 				end
 				
-				def wrap_response(response, klass = Parser)
-					super(response, klass)
-				end
-				
-				def process_response(request, response)
+				def parser_for(response)
 					if content_type = response.headers['content-type']
 						if content_type.start_with? @content_type
-							wrap_response(response)
-						else
-							raise Error, "Unknown content type: #{content_type}!"
+							return Parser
 						end
 					end
 					
-					return response
+					return super
 				end
 			end
 		end

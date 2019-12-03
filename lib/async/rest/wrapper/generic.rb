@@ -32,13 +32,25 @@ module Async
 				# @param response [Protocol::HTTP::Response] the response that was received.
 				# @return [Object] some application specific representation of the response.
 				def process_response(request, response)
-					return response
+					wrap_response(response)
+				end
+				
+				def parser_for(response)
+					return Unsupported
 				end
 				
 				# Wrap the response body in the given klass.
-				def wrap_response(response, klass)
+				def wrap_response(response)
 					if body = response.body
-						response.body = klass.new(body)
+						response.body = parser_for(response).new(body)
+					end
+					
+					return response
+				end
+				
+				class Unsupported < HTTP::Body::Wrapper
+					def join
+						raise ResponseError, super
 					end
 				end
 			end

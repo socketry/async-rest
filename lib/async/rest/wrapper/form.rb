@@ -48,20 +48,12 @@ module Async
 				
 				def parser_for(response)
 					if content_type = response.headers['content-type']
-						return @content_types[content_type]
-					end
-				end
-				
-				def process_response(request, response)
-					if body = response.body
-						if parser = parser_for(response)
-							wrap_response(response, parser)
-						else
-							raise Error, "Unsupported content type: #{content_type}!"
+						if parser = @content_types[content_type]
+							return parser
 						end
 					end
 					
-					return response
+					return super
 				end
 			end
 		end

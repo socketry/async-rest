@@ -23,7 +23,10 @@ module Async
 		class Error < StandardError
 		end
 		
-		class RequestFailure < Error
+		class RequestError < Error
+		end
+		
+		class ResponseError < Error
 		end
 	end
 end

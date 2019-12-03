@@ -37,7 +37,17 @@ module Async
 			end
 			
 			def self.for(*args, **options)
-				self.new(Resource.for(*args), **options)
+				representation = self.new(Resource.for(*args), **options)
+				
+				return representation unless block_given?
+				
+				Async do
+					begin
+						yield representation
+					ensure
+						representation.close
+					end
+				end
 			end
 			
 			WRAPPER = Wrapper::JSON
