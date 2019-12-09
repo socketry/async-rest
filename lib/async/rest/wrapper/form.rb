@@ -35,7 +35,9 @@ module Async
 				end
 				
 				def prepare_request(payload, headers)
-					headers['accept'] ||= @content_types.keys
+					@content_types.each_key do |key|
+						headers.add('accept', key)
+					end
 					
 					if payload
 						headers['content-type'] = URLEncoded::APPLICATION_FORM_URLENCODED
