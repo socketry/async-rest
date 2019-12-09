@@ -58,7 +58,7 @@ module Async
 				
 				return resource unless block_given?
 				
-				Async.run do
+				Async do
 					begin
 						yield resource
 					ensure
