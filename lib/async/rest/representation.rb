@@ -116,7 +116,7 @@ module Async
 					@metadata = response.headers
 					@value = response.read
 				else
-					raise ResponseError, response.read
+					raise ResponseError, response
 				end
 			end
 			

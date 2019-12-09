@@ -36,6 +36,7 @@ module Async
 				end
 				
 				def parser_for(response)
+					# It's not always clear why this error is being thrown.
 					return Unsupported
 				end
 				
@@ -50,7 +51,7 @@ module Async
 				
 				class Unsupported < HTTP::Body::Wrapper
 					def join
-						raise ResponseError, super
+						raise UnsupportedError, super
 					end
 				end
 			end

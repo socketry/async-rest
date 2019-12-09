@@ -26,7 +26,21 @@ module Async
 		class RequestError < Error
 		end
 		
+		class UnsupportedError < Error
+		end
+		
 		class ResponseError < Error
+			def initialize(response)
+				super(response.read)
+				
+				@response = response
+			end
+			
+			def to_s
+				"#{@response}: #{super}"
+			end
+			
+			attr :response
 		end
 	end
 end
