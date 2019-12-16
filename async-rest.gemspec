@@ -4,6 +4,7 @@ require_relative 'lib/async/rest/version'
 Gem::Specification.new do |spec|
 	spec.name          = "async-rest"
 	spec.version       = Async::REST::VERSION
+	spec.licenses      = ["MIT"]
 	spec.authors       = ["Samuel Williams"]
 	spec.email         = ["samuel.williams@oriontransfer.co.nz"]
 
