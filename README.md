@@ -7,7 +7,7 @@ Roy Thomas Fielding's thesis [Architectural Styles and the Design of Network-bas
 
 This gem models these abstractions as closely and practically as possible and serves as a basis for building asynchronous web clients.
 
-[![Build Status](https://secure.travis-ci.com/socketry/async-rest.svg)](http://travis-ci.com/socketry/async-rest)
+[![Build Status](https://travis-ci.com/socketry/async-rest.svg?branch=master)](https://travis-ci.com/socketry/async-rest)
 [![Code Climate](https://codeclimate.com/github/socketry/async-rest.svg)](https://codeclimate.com/github/socketry/async-rest)
 [![Coverage Status](https://coveralls.io/repos/socketry/async-rest/badge.svg)](https://coveralls.io/r/socketry/async-rest)
 
