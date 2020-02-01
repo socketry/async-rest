@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require_relative '../../lib/async/rest'
 require_relative '../../lib/async/rest/wrapper/url_encoded'
