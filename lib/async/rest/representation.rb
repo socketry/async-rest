@@ -38,8 +38,8 @@ module Async
 				return klass
 			end
 			
-			def self.for(*args, **options)
-				representation = self.new(Resource.for(*args), **options)
+			def self.for(*arguments, **options)
+				representation = self.new(Resource.for(*arguments), **options)
 				
 				return representation unless block_given?
 				

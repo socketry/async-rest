@@ -28,9 +28,9 @@ require 'async/rest/representation'
 
 module DNS
 	class Query < Async::REST::Representation
-		def initialize(*args)
+		def initialize(*arguments)
 			# This is the old/weird content-type used by Google's DNS resolver. It's obsolete.
-			super(*args, wrapper: Async::REST::Wrapper::JSON.new("application/x-javascript"))
+			super(*arguments, wrapper: Async::REST::Wrapper::JSON.new("application/x-javascript"))
 		end
 		
 		def question

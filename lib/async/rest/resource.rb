@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Copyright, 2018, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -48,7 +46,7 @@ module Async
 				return ::Protocol::HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
 			
-			def self.for(endpoint, *args)
+			def self.for(endpoint, *arguments)
 				# TODO This behaviour is deprecated and will probably be removed.
 				if endpoint.is_a? String
 					endpoint = HTTP::Endpoint.parse(endpoint)
@@ -56,7 +54,7 @@ module Async
 				
 				client, reference = connect(endpoint)
 				
-				resource = self.new(client, reference, *args)
+				resource = self.new(client, reference, *arguments)
 				
 				return resource unless block_given?
 				
@@ -72,14 +70,14 @@ module Async
 			attr :reference
 			attr :headers
 			
-			def self.with(parent, *args, headers: {}, **options)
+			def self.with(parent, *arguments, headers: {}, **options)
 				reference = parent.reference.with(**options)
 				
-				self.new(*args, parent.delegate, reference, parent.headers.merge(headers))
+				self.new(*arguments, parent.delegate, reference, parent.headers.merge(headers))
 			end
 			
-			def with(*args, **options)
-				self.class.with(self, *args, **options)
+			def with(*arguments, **options)
+				self.class.with(self, *arguments, **options)
 			end
 			
 			def get(klass = Representation, **parameters)

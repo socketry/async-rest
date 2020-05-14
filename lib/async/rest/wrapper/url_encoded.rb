@@ -39,7 +39,7 @@ module Async
 				
 				attr :content_type
 				
-				def split(*args)
+				def split(*arguments)
 					@content_type.split
 				end
 				
