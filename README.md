@@ -2,34 +2,28 @@
 
 Roy Thomas Fielding's thesis [Architectural Styles and the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm) describes [Representational State Transfer](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) which comprises several core concepts:
 
-- `Resource`: A conceptual mapping to one or more entities.
-- `Representation`: An instance of a resource at a given point in time.
+  - `Resource`: A conceptual mapping to one or more entities.
+  - `Representation`: An instance of a resource at a given point in time.
 
 This gem models these abstractions as closely and practically as possible and serves as a basis for building asynchronous web clients.
 
-[![Build Status](https://travis-ci.com/socketry/async-rest.svg?branch=master)](https://travis-ci.com/socketry/async-rest)
-[![Code Climate](https://codeclimate.com/github/socketry/async-rest.svg)](https://codeclimate.com/github/socketry/async-rest)
-[![Coverage Status](https://coveralls.io/repos/socketry/async-rest/badge.svg)](https://coveralls.io/r/socketry/async-rest)
-
-[async]: https://github.com/socketry/async
-[async-io]: https://github.com/socketry/async-io
-[falcon]: https://github.com/socketry/falcon
+[![Development Status](https://github.com/socketry/async-rest/workflows/Development/badge.svg)](https://github.com/socketry/async-rest/actions?workflow=Development)
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-```ruby
+``` ruby
 gem 'async-rest'
 ```
 
 And then execute:
 
-	$ bundle
+    $ bundle
 
 Or install it yourself as:
 
-	$ gem install async-rest
+    $ gem install async-rest
 
 ## Usage
 
@@ -39,7 +33,7 @@ Generally speaking, you want to create a representation class for each remote re
 
 This simple example shows how to use a custom representation to access DNS over HTTP.
 
-```ruby
+``` ruby
 require 'async/http/server'
 require 'async/http/endpoint'
 
@@ -75,11 +69,11 @@ end
 
 ## Contributing
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+1.  Fork it
+2.  Create your feature branch (`git checkout -b my-new-feature`)
+3.  Commit your changes (`git commit -am 'Add some feature'`)
+4.  Push to the branch (`git push origin my-new-feature`)
+5.  Create new Pull Request
 
 ## License
 
