@@ -66,8 +66,12 @@ module Async
 				@value = value
 			end
 			
-			def with(klass = self.class, **options)
-				klass.new(@resource.with(**options), wrapper: klass::WRAPPER.new)
+			def with(klass = nil, **options)
+				if klass
+					klass.new(@resource.with(**options), wrapper: klass::WRAPPER.new)
+				else
+					self.new(@resource.with(**options), wrapper: @wrapper)
+				end
 			end
 			
 			def [] **parameters
