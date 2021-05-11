@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+			<title>Source</title>
+		
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		
+		<link rel="icon" type="image/png" href="../_static/icon.png"/>
+		<link rel="stylesheet" href="../_static/site.css" type="text/css" media="screen"/>
+		
+		<script src="../_components/jquery/jquery.min.js"></script>
+		<script src="../_components/jquery-syntax/jquery.syntax.min.js"></script>
+		
+		<script src="../_static/links.js"></script>
+		
+		<script type="text/javascript">
+		//<![CDATA[
+			jQuery(function($) {
+				$.syntax();
+			});
+		//]]>
+		</script>
+	</head>
+
+	<body>
+		<header> › <a class="link" href="../index.html">Project</a> › <a class="link" href="index.html">Source</a></header>
+		
+		<main>
+			
+	<h1>Source</h1>
+	
+	<ul class="index"><li>
+					<a href="Async/index.html"><code class="language-ruby">module Async</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Async/REST/index.html"><code class="language-ruby">module REST</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Resource/index.html"><code class="language-ruby">class Resource &lt; ::Protocol::HTTP::Middleware</code></a>
+					
+						<p>The key abstraction of information in REST is a resource. Any information that can be named can be a resource: a document or image, a temporal service (e.g. &quot;today's weather in Los Angeles&quot;), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource. A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.</p>
+
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource%23initialize"><code class="language-ruby">def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers = ::Protocol::HTTP::Headers.new)</code></a>
+					
+					
+									</li><li>
+					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource.connect"><code class="language-ruby">def self.connect(endpoint)</code></a>
+					
+					
+									</li><li>
+					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource%23prepare_request"><code class="language-ruby">def prepare_request(verb, payload)</code></a>
+					
+					
+									</li></ul>				</li><li>
+					<a href="Async/REST/Wrapper/index.html"><code class="language-ruby">module Wrapper</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Wrapper/URLEncoded/index.html"><code class="language-ruby">class URLEncoded &lt; Generic</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Wrapper/URLEncoded/Parser/index.html"><code class="language-ruby">class Parser &lt; ::Protocol::HTTP::Body::Wrapper</code></a>
+					
+					
+					<ul class="index"></ul>				</li></ul>				</li><li>
+					<a href="Async/REST/Wrapper/Generic/index.html"><code class="language-ruby">class Generic</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Wrapper/Generic/index.html#Async%3A%3AREST%3A%3AWrapper%3A%3AGeneric%23prepare_request"><code class="language-ruby">def prepare_request(payload, headers)</code></a>
+					
+					
+									</li><li>
+					<a href="Async/REST/Wrapper/Generic/index.html#Async%3A%3AREST%3A%3AWrapper%3A%3AGeneric%23process_response"><code class="language-ruby">def process_response(request, response)</code></a>
+					
+					
+									</li><li>
+					<a href="Async/REST/Wrapper/Generic/index.html#Async%3A%3AREST%3A%3AWrapper%3A%3AGeneric%23wrap_response"><code class="language-ruby">def wrap_response(response)</code></a>
+					
+						<p>Wrap the response body in the given klass.</p>
+
+					
+									</li><li>
+					<a href="Async/REST/Wrapper/Generic/Unsupported/index.html"><code class="language-ruby">class Unsupported &lt; HTTP::Body::Wrapper</code></a>
+					
+					
+					<ul class="index"></ul>				</li></ul>				</li><li>
+					<a href="Async/REST/Wrapper/JSON/index.html"><code class="language-ruby">class JSON &lt; Generic</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Wrapper/JSON/Parser/index.html"><code class="language-ruby">class Parser &lt; HTTP::Body::Wrapper</code></a>
+					
+					
+					<ul class="index"></ul>				</li></ul>				</li><li>
+					<a href="Async/REST/Wrapper/Form/index.html"><code class="language-ruby">class Form &lt; Generic</code></a>
+					
+					
+					<ul class="index"></ul>				</li></ul>				</li><li>
+					<a href="Async/REST/Representation/index.html"><code class="language-ruby">class Representation</code></a>
+					
+						<p>REST components perform actions on a resource by using a representation to capture the current or intended state of that resource and transferring that representation between components. A representation is a sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less precise names for a representation include: document, file, and HTTP message entity, instance, or variant.</p>
+
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Representation/index.html#Async%3A%3AREST%3A%3ARepresentation%23initialize"><code class="language-ruby">def initialize(resource, metadata: {}, value: nil, wrapper: self.class::WRAPPER.new)</code></a>
+					
+					
+									</li><li>
+					<a href="Async/REST/Representation/index.html#Async%3A%3AREST%3A%3ARepresentation%23process_response"><code class="language-ruby">def process_response(request, response)</code></a>
+					
+						<p>If an exception propagates out of this method, the response will be closed.</p>
+
+					
+									</li><li>
+					<a href="Async/REST/Representation/each/index.html"><code class="language-ruby">::Protocol::HTTP::Methods.each</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Representation/each/define_method/index.html"><code class="language-ruby">define_method(verb.downcase)</code></a>
+					
+						<p>TODO when Ruby 3.0 lands, convert this to |payload = nil, **parameters|</p>
+
+					
+					<ul class="index"></ul>				</li></ul>				</li></ul>				</li><li>
+					<a href="Async/REST/Error/index.html"><code class="language-ruby">class Error &lt; StandardError</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Async/REST/RequestError/index.html"><code class="language-ruby">class RequestError &lt; Error</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Async/REST/UnsupportedError/index.html"><code class="language-ruby">class UnsupportedError &lt; Error</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Async/REST/ResponseError/index.html"><code class="language-ruby">class ResponseError &lt; Error</code></a>
+					
+					
+					<ul class="index"></ul>				</li></ul>				</li></ul>				</li></ul>
+				
+			<footer>Documentation generated by <a href="https://github.com/socketry/utopia-project">Utopia::Project</a>.</footer>
+		</main>
+	</body>
+</html>
