@@ -31,7 +31,7 @@ module Async
 		# A representation consists of data, metadata describing the data, and, on occasion, metadata to describe the metadata (usually for the purpose of verifying message integrity). Metadata is in the form of name-value pairs, where the name corresponds to a standard that defines the value's structure and semantics. Response messages may include both representation metadata and resource metadata: information about the resource that is not specific to the supplied representation.
 		class Representation
 			def self.[] wrapper
-				klass = Class.new(Representation)
+				klass = Class.new(self)
 				
 				klass.const_set(:WRAPPER, wrapper)
 				
@@ -67,7 +67,7 @@ module Async
 			end
 			
 			def with(klass = self.class, **options)
-				klass.new(@resource.with(**options), wrapper: @wrapper)
+				klass.new(@resource.with(**options), wrapper: klass::WRAPPER.new)
 			end
 			
 			def [] **parameters
