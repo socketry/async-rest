@@ -40,36 +40,14 @@
 					
 					
 					<ul class="index"><li>
-					<a href="Async/REST/Resource/index.html"><code class="language-ruby">class Resource &lt; ::Protocol::HTTP::Middleware</code></a>
-					
-						<p>The key abstraction of information in REST is a resource. Any information that can be named can be a resource: a document or image, a temporal service (e.g. &quot;today's weather in Los Angeles&quot;), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource. A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.</p>
-
-					
-					<ul class="index"><li>
-					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource%23initialize"><code class="language-ruby">def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers = ::Protocol::HTTP::Headers.new)</code></a>
-					
-					
-									</li><li>
-					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource.connect"><code class="language-ruby">def self.connect(endpoint)</code></a>
-					
-					
-									</li><li>
-					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource%23prepare_request"><code class="language-ruby">def prepare_request(verb, payload)</code></a>
-					
-					
-									</li></ul>				</li><li>
 					<a href="Async/REST/Wrapper/index.html"><code class="language-ruby">module Wrapper</code></a>
 					
 					
 					<ul class="index"><li>
-					<a href="Async/REST/Wrapper/URLEncoded/index.html"><code class="language-ruby">class URLEncoded &lt; Generic</code></a>
+					<a href="Async/REST/Wrapper/Form/index.html"><code class="language-ruby">class Form &lt; Generic</code></a>
 					
 					
-					<ul class="index"><li>
-					<a href="Async/REST/Wrapper/URLEncoded/Parser/index.html"><code class="language-ruby">class Parser &lt; ::Protocol::HTTP::Body::Wrapper</code></a>
-					
-					
-					<ul class="index"></ul>				</li></ul>				</li><li>
+					<ul class="index"></ul>				</li><li>
 					<a href="Async/REST/Wrapper/Generic/index.html"><code class="language-ruby">class Generic</code></a>
 					
 					
@@ -100,10 +78,48 @@
 					
 					
 					<ul class="index"></ul>				</li></ul>				</li><li>
-					<a href="Async/REST/Wrapper/Form/index.html"><code class="language-ruby">class Form &lt; Generic</code></a>
+					<a href="Async/REST/Wrapper/URLEncoded/index.html"><code class="language-ruby">class URLEncoded &lt; Generic</code></a>
 					
 					
-					<ul class="index"></ul>				</li></ul>				</li><li>
+					<ul class="index"><li>
+					<a href="Async/REST/Wrapper/URLEncoded/Parser/index.html"><code class="language-ruby">class Parser &lt; ::Protocol::HTTP::Body::Wrapper</code></a>
+					
+					
+					<ul class="index"></ul>				</li></ul>				</li></ul>				</li><li>
+					<a href="Async/REST/Error/index.html"><code class="language-ruby">class Error &lt; StandardError</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Async/REST/RequestError/index.html"><code class="language-ruby">class RequestError &lt; Error</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Async/REST/UnsupportedError/index.html"><code class="language-ruby">class UnsupportedError &lt; Error</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Async/REST/ResponseError/index.html"><code class="language-ruby">class ResponseError &lt; Error</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Async/REST/Resource/index.html"><code class="language-ruby">class Resource &lt; ::Protocol::HTTP::Middleware</code></a>
+					
+						<p>The key abstraction of information in REST is a resource. Any information that can be named can be a resource: a document or image, a temporal service (e.g. &quot;today's weather in Los Angeles&quot;), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource. A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.</p>
+
+					
+					<ul class="index"><li>
+					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource%23initialize"><code class="language-ruby">def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers = ::Protocol::HTTP::Headers.new)</code></a>
+					
+					
+									</li><li>
+					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource.connect"><code class="language-ruby">def self.connect(endpoint)</code></a>
+					
+					
+									</li><li>
+					<a href="Async/REST/Resource/index.html#Async%3A%3AREST%3A%3AResource%23prepare_request"><code class="language-ruby">def prepare_request(verb, payload)</code></a>
+					
+					
+									</li></ul>				</li><li>
 					<a href="Async/REST/Representation/index.html"><code class="language-ruby">class Representation</code></a>
 					
 						<p>REST components perform actions on a resource by using a representation to capture the current or intended state of that resource and transferring that representation between components. A representation is a sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less precise names for a representation include: document, file, and HTTP message entity, instance, or variant.</p>
@@ -129,23 +145,7 @@
 						<p>TODO when Ruby 3.0 lands, convert this to |payload = nil, **parameters|</p>
 
 					
-					<ul class="index"></ul>				</li></ul>				</li></ul>				</li><li>
-					<a href="Async/REST/Error/index.html"><code class="language-ruby">class Error &lt; StandardError</code></a>
-					
-					
-					<ul class="index"></ul>				</li><li>
-					<a href="Async/REST/RequestError/index.html"><code class="language-ruby">class RequestError &lt; Error</code></a>
-					
-					
-					<ul class="index"></ul>				</li><li>
-					<a href="Async/REST/UnsupportedError/index.html"><code class="language-ruby">class UnsupportedError &lt; Error</code></a>
-					
-					
-					<ul class="index"></ul>				</li><li>
-					<a href="Async/REST/ResponseError/index.html"><code class="language-ruby">class ResponseError &lt; Error</code></a>
-					
-					
-					<ul class="index"></ul>				</li></ul>				</li></ul>				</li></ul>
+					<ul class="index"></ul>				</li></ul>				</li></ul>				</li></ul>				</li></ul>				</li></ul>
 				
 			<footer>Documentation generated by <a href="https://github.com/socketry/utopia-project">Utopia::Project</a>.</footer>
 		</main>
