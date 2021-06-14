@@ -70,7 +70,7 @@ module Async
 				if klass
 					klass.new(@resource.with(**options), wrapper: klass::WRAPPER.new)
 				else
-					self.new(@resource.with(**options), wrapper: @wrapper)
+					self.class.new(@resource.with(**options), wrapper: @wrapper)
 				end
 			end
 			
