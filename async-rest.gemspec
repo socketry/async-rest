@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
 	spec.add_dependency "protocol-http", "~> 0.7"
 	
 	spec.add_development_dependency "async-rspec", "~> 1.1"
+	spec.add_development_dependency "bake"
 	spec.add_development_dependency "bundler"
 	spec.add_development_dependency "covered"
 	spec.add_development_dependency "rake"
