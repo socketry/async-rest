@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require_relative "lib/async/rest/version"
 
@@ -6,7 +7,7 @@ Gem::Specification.new do |spec|
 	spec.version = Async::REST::VERSION
 	
 	spec.summary = "A library for RESTful clients (and hopefully servers)."
-	spec.authors = ["Samuel Williams"]
+	spec.authors = ["Samuel Williams", "Olle Jonsson", "Terry", "Cyril Roelandt"]
 	spec.license = "MIT"
 	
 	spec.homepage = "https://github.com/socketry/async-rest"
