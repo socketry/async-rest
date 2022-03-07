@@ -23,6 +23,7 @@
 require 'async/http/server'
 require 'async/http/endpoint'
 require 'async/rest/resource'
+require 'async/io/shared_endpoint'
 
 RSpec.shared_examples_for Async::REST::Wrapper do
 	include_context Async::RSpec::Reactor
@@ -30,21 +31,28 @@ RSpec.shared_examples_for Async::REST::Wrapper do
 	let(:url) {'http://127.0.0.1:9296/'}
 	
 	let(:representation) {Async::REST::Representation.for(url, wrapper: subject)}
-	let(:endpoint) {Async::HTTP::Endpoint.parse(url)}
+	let(:endpoint) {Async::HTTP::Endpoint.parse(url, reuse_port: true)}
 	
-	let(:server) do
-		Async::HTTP::Server.for(endpoint) do |request|
+	let(:server) {@server}
+	
+	before do
+		@bound_endpoint = Async::IO::SharedEndpoint.bound(endpoint)
+		
+		@server = Async::HTTP::Server.for(@bound_endpoint, protocol: endpoint.protocol, scheme: endpoint.scheme) do |request|
 			if request.headers['content-type'] == subject.content_type
 				# Echo it back:
 				Protocol::HTTP::Response[200, request.headers, request.body]
 			end
 		end
+		
+		@server_task = reactor.async do
+			@server.run
+		end
 	end
 	
-	let!(:server_task) do
-		reactor.async do
-			server.run
-		end
+	after do
+		@server_task.stop
+		@bound_endpoint.close
 	end
 	
 	let(:payload) {{username: "Frederick", password: "Fish"}}
@@ -55,7 +63,6 @@ RSpec.shared_examples_for Async::REST::Wrapper do
 		expect(response).to be_success
 		expect(response.read).to be == payload
 		
-		server_task.stop
 		representation.close
 	end
 end
