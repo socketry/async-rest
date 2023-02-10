@@ -1,0 +1,3 @@
+cloudflare:
+  url: https://github.com/socketry/cloudflare.git
+  command: bundle exec rspec
