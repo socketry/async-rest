@@ -15,15 +15,15 @@ Gem::Specification.new do |spec|
 	
 	spec.homepage = "https://github.com/socketry/async-rest"
 	
+	spec.metadata = {
+		"documentation_uri" => "https://socketry.github.io/async-rest/",
+		"source_code_uri" => "https://github.com/socketry/async-rest.git",
+	}
+	
 	spec.files = Dir.glob(['{lib}/**/*', '*.md'], File::FNM_DOTMATCH, base: __dir__)
+	
+	spec.required_ruby_version = ">= 3.1"
 	
 	spec.add_dependency "async-http", "~> 0.42"
 	spec.add_dependency "protocol-http", "~> 0.7"
-	
-	spec.add_development_dependency "async-rspec", "~> 1.1"
-	spec.add_development_dependency "bake"
-	spec.add_development_dependency "bundler"
-	spec.add_development_dependency "covered"
-	spec.add_development_dependency "sus"
-	spec.add_development_dependency "sus-fixtures-async-http"
 end
