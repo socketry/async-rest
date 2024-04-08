@@ -41,7 +41,7 @@ module Async
 			end
 			
 			def self.for(resource, response)
-				self.new(resource, metadata: response.headers, value: response.read)
+				self.new(resource, value: response.read, metadata: response.headers)
 			end
 			
 			# @param resource [Resource] the RESTful resource that this representation is of.
