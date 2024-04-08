@@ -19,15 +19,15 @@ module Async
 					@content_types = content_types
 				end
 				
-				def prepare_request(payload, headers)
+				def prepare_request(request, payload)
 					@content_types.each_key do |key|
-						headers.add('accept', key)
+						request.headers.add('accept', key)
 					end
 					
 					if payload
-						headers['content-type'] = URLEncoded::APPLICATION_FORM_URLENCODED
+						request.headers['content-type'] = URLEncoded::APPLICATION_FORM_URLENCODED
 						
-						::Protocol::HTTP::Body::Buffered.new([
+						request.body = ::Protocol::HTTP::Body::Buffered.new([
 							::Protocol::HTTP::URL.encode(payload)
 						])
 					end

@@ -16,86 +16,49 @@ module Async
 		# 
 		# A representation consists of data, metadata describing the data, and, on occasion, metadata to describe the metadata (usually for the purpose of verifying message integrity). Metadata is in the form of name-value pairs, where the name corresponds to a standard that defines the value's structure and semantics. Response messages may include both representation metadata and resource metadata: information about the resource that is not specific to the supplied representation.
 		class Representation
+			WRAPPER = Wrapper::JSON.new
+			
 			def self.[] wrapper
 				klass = Class.new(self)
 				
-				klass.
+				if wrapper.is_a?(Class)
+					wrapper = wrapper.new
+				end
+				
+				klass.const_set(:WRAPPER, wrapper)
 				
 				return klass
 			end
 			
-			# def get(klass = Representation, **parameters)
-			# 	klass.new(self.with(parameters: parameters)).tap(&:value)
-			# end
-			
-			# # @parameter verb [String] the HTTP verb to use.
-			# # @parameter payload [Object] the object which will used to generate the body of the request.
-			# def prepare_request(verb, payload)
-			# 	if payload
-			# 		headers = @headers.dup
-			# 		body = yield payload, headers
-			# 	else
-			# 		headers = @headers
-			# 		body = nil
-			# 	end
-				
-			# 	return ::Protocol::HTTP::Request[verb, @reference, headers, body]
-			# end
-			
 			class << self
-				def wrapper
-					@wrapper ||= WRAPPER.new
-				end
-				
 				::Protocol::HTTP::Methods.each do |name, verb|
 					define_method(verb.downcase) do |resource, payload = nil|
-						
-						request = prepare_request(verb, payload)
-						
-						response = @resource.call(request)
-						
-						# If we exit this block because of an exception, we close the response. This ensures we don't have any dangling connections.
-						begin
-							return process_response(request, response)
-						rescue
-							response.close
-							
-							raise
+						self::WRAPPER.call(resource, verb, payload) do |response|
+							return self.for(resource, response)
 						end
 					end
 				end
 			end
 			
-			def self.for(*arguments, **options)
-				representation = self.new(Resource.for(*arguments), **options)
-				
-				return representation unless block_given?
-				
-				Async do
-					begin
-						yield representation
-					ensure
-						representation.close
-					end
-				end
+			def self.for(resource, response)
+				self.new(resource, metadata: response.headers, value: response.read)
 			end
-			
-			WRAPPER = Wrapper::JSON
 			
 			# @param resource [Resource] the RESTful resource that this representation is of.
 			# @param metadata [Hash | HTTP::Headers] the metadata associated with the representation.
 			# @param value [Object] the value of the representation.
-			def initialize(resource, metadata: {}, value: nil)
+			def initialize(resource, value: nil, metadata: {})
 				@resource = resource
-				@metadata = metadata
+				
 				@value = value
+				@metadata = metadata
 			end
 			
 			def with(klass = nil, **options)
 				if klass
-					klass.new(@resource.with(**options), wrapper: klass::WRAPPER.new)
+					klass.new(@resource.with(**options))
 				else
-					self.class.new(@resource.with(**options), wrapper: @wrapper)
+					self.class.new(@resource.with(**options))
 				end
 			end
 			
@@ -108,26 +71,16 @@ module Async
 			end
 			
 			attr :resource
-			
-			def prepare_request(verb, payload)
-				@resource.prepare_request(verb, payload, &@wrapper.method(:prepare_request))
-			end
-			
-			# If an exception propagates out of this method, the response will be closed.
-			def process_response(request, response)
-				@wrapper.process_response(request, response)
-			end
-			
 			attr :metadata
 			
-			def value!
-				response = self.get
-				
-				if response.success?
-					@metadata = response.headers
-					@value = response.read
-				else
-					raise ResponseError, response
+			private def get
+				self.class::WRAPPER.call(@resource) do |response|
+					if response.success?
+						@metadata = response.headers
+						@value = response.read
+					else
+						raise ResponseError, response
+					end
 				end
 			end
 			
@@ -136,7 +89,7 @@ module Async
 			end
 			
 			def value
-				@value ||= value!
+				@value ||= self.get
 			end
 			
 			def value= value

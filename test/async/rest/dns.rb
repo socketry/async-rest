@@ -23,11 +23,11 @@ describe Async::REST::Resource do
 	include Sus::Fixtures::Async::ReactorContext
 	
 	let(:url) {'https://dns.google.com/resolve'}
-	let(:resource) {subject.for(url)}
+	let(:resource) {subject.open(url)}
 	
 	it "can get resource" do
 		# The first argument is the representation class to use:
-		query = resource.get(DNS::Query, name: 'example.com', type: 'AAAA')
+		query = DNS::Query.get(resource.with(parameters: {name: 'example.com', type: 'AAAA'}))
 		
 		expect(query.value).to have_keys(:Question, :Answer)
 		

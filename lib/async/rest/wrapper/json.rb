@@ -27,13 +27,13 @@ module Async
 					@content_type.split
 				end
 				
-				def prepare_request(payload, headers)
-					headers['accept'] ||= @content_type
+				def prepare_request(request, payload)
+					request.headers['accept'] ||= @content_type
 					
 					if payload
-						headers['content-type'] = @content_type
+						request.headers['content-type'] = @content_type
 						
-						HTTP::Body::Buffered.new([
+						request.body = HTTP::Body::Buffered.new([
 							::JSON.dump(payload)
 						])
 					end

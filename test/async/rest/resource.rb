@@ -7,7 +7,7 @@ require 'async/rest/resource'
 
 describe Async::REST::Resource do
 	let(:url) {'http://example.com'}
-	let(:resource) {subject.for(url)}
+	let(:resource) {subject.open(url)}
 	
 	it 'can update path' do
 		expect(resource.reference.path).to be == '/'

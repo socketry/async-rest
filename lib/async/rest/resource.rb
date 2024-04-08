@@ -48,14 +48,15 @@ module Async
 			
 			def self.with(parent, headers: {}, **options)
 				reference = parent.reference.with(**options)
+				headers = parent.headers.merge(headers)
 				
-				self.new(parent.delegate, reference, headers: parent.headers.merge(headers))
+				self.new(parent.delegate, reference, headers)
 			end
 			
 			# @parameter delegate [Async::HTTP::Middleware] the delegate that will handle requests.
 			# @parameter reference [::Protocol::HTTP::Reference] the resource identifier (base request path/parameters).
 			# @parameter headers [::Protocol::HTTP::Headers] the default headers that will be supplied with the request.
-			def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers: ::Protocol::HTTP::Headers.new)
+			def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers = ::Protocol::HTTP::Headers.new)
 				super(delegate)
 				
 				@reference = reference
@@ -75,6 +76,13 @@ module Async
 			
 			def to_s
 				"\#<#{self.class} #{@reference.to_s}>"
+			end
+			
+			def call(request)
+				request.path = @reference.with(path: request.path).to_s
+				request.headers = @headers.merge(request.headers)
+				
+				super
 			end
 		end
 	end
