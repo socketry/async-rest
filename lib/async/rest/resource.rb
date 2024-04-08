@@ -12,6 +12,8 @@ require 'protocol/http/reference'
 
 module Async
 	module REST
+		# A resource is an abstract reference to some named entity, typically a URL with associated metatadata. Generally, your entry to any web service will be a resource, and that resource will create zero or more representations as you navigate through the service.
+		#
 		# The key abstraction of information in REST is a resource. Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource. A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.
 		class Resource < ::Protocol::HTTP::Middleware
 			# @param delegate [Async::HTTP::Middleware] the delegate that will handle requests.
