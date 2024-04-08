@@ -11,7 +11,7 @@ describe Async::REST::Representation do
 	
 	with '.[]' do
 		it "uses specified base class" do
-			expect(representation_class::WRAPPER).to be_equal(Async::REST::Wrapper::JSON)
+			expect(representation_class::WRAPPER).to be_a(Async::REST::Wrapper::JSON)
 			expect(representation_class.superclass).to be_equal(base)
 		end
 	end
@@ -24,7 +24,7 @@ describe Async::REST::Representation do
 			expect(resource).to receive(:with)
 			custom_representation = representation.with(representation_class)
 			
-			expect(custom_representation.wrapper).to be_a Async::REST::Wrapper::JSON
+			expect(custom_representation).to be_a representation_class
 		end
 	end
 end

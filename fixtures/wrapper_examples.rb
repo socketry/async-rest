@@ -14,7 +14,8 @@ require 'async/io/shared_endpoint'
 AWrapper = Sus::Shared("a wrapper") do
 	include Sus::Fixtures::Async::HTTP::ServerContext
 	
-	let(:representation) {Async::REST::Representation.for(bound_url, wrapper: wrapper)}
+	let(:resource) {Async::REST::Resource.open(bound_url)}
+	let(:representation) {Async::REST::Representation[wrapper]}
 	
 	let(:middleware) do
 		Protocol::HTTP::Middleware.for do |request|
@@ -30,11 +31,9 @@ AWrapper = Sus::Shared("a wrapper") do
 	let(:payload) {{username: "Frederick", password: "Fish"}}
 	
 	it "can post payload representation" do
-		response = representation.post(payload)
+		instance = representation.post(resource, payload)
 		
-		expect(response).to be(:success?)
-		expect(response.read).to be == payload
-		
-		representation.close
+		expect(instance).to be_a(representation)
+		expect(instance.value).to be == payload
 	end
 end
