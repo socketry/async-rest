@@ -8,11 +8,7 @@ require 'async/rest/resource'
 require 'async/rest/representation'
 
 module DNS
-	class Query < Async::REST::Representation
-		def initialize(*arguments)
-			super(*arguments, wrapper: Async::REST::Wrapper::JSON.new)
-		end
-		
+	class Query < Async::REST::Representation[Async::REST::Wrapper::JSON]
 		def question
 			value[:Question]
 		end
