@@ -32,16 +32,20 @@ module Async
 			
 			class << self
 				::Protocol::HTTP::Methods.each do |name, verb|
-					define_method(verb.downcase) do |resource, payload = nil|
+					define_method(verb.downcase) do |resource, payload = nil, &block|
 						self::WRAPPER.call(resource, verb, payload) do |response|
-							return self.for(resource, response)
+							return self.for(resource, response, &block)
 						end
 					end
 				end
 			end
 			
-			def self.for(resource, response)
-				self.new(resource, value: response.read, metadata: response.headers)
+			def self.for(resource, response, &block)
+				if block_given?
+					block.call(response)
+				end
+				
+				return self.new(resource, value: response.read, metadata: response.headers)
 			end
 			
 			# @param resource [Resource] the RESTful resource that this representation is of.
@@ -92,32 +96,35 @@ module Async
 				@value ||= self.get
 			end
 			
-			def value= value
-				@value = self.assign(value)
-			end
-			
-			def call(value)
-				if value
-					self.post(value)
-				else
-					self.delete
+			# Provides a way to mutate the value of the representation.
+			module Mutable
+				def value= value
+					@value = self.assign(value)
+				end
+				
+				def call(value)
+					if value
+						self.post(value)
+					else
+						self.delete
+					end
+				end
+				
+				def assign(value)
+					response = self.call(value)
+					
+					response.read
+					
+					return @value
+				end
+				
+				def update
+					@value = assign(@value)
 				end
 			end
 			
-			def assign(value)
-				response = self.call(value)
-				
-				response.read
-				
-				return @value
-			end
-			
-			def update
-				@value = assign(@value)
-			end
-			
 			def inspect
-				"\#<#{self.class} #{@resource.inspect}: value=#{@value.inspect}>"
+				"\#<#{self.class} #{@resource.inspect} value=#{@value.inspect}>"
 			end
 		end
 	end
