@@ -5,11 +5,8 @@
 
 require 'sus/fixtures/async/http/server_context'
 
-require 'async/http/server'
-require 'async/http/endpoint'
 require 'async/rest/resource'
 require 'async/rest/representation'
-require 'async/io/shared_endpoint'
 
 AWrapper = Sus::Shared("a wrapper") do
 	include Sus::Fixtures::Async::HTTP::ServerContext
