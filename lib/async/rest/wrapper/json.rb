@@ -33,13 +33,13 @@ module Async
 					if payload
 						request.headers['content-type'] = @content_type
 						
-						request.body = HTTP::Body::Buffered.new([
+						request.body = ::Protocol::HTTP::Body::Buffered.new([
 							::JSON.dump(payload)
 						])
 					end
 				end
 				
-				class Parser < HTTP::Body::Wrapper
+				class Parser < ::Protocol::HTTP::Body::Wrapper
 					def join
 						::JSON.parse(super, symbolize_names: true)
 					end

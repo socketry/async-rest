@@ -53,7 +53,7 @@ module Async
 					return response
 				end
 				
-				class Unsupported < HTTP::Body::Wrapper
+				class Unsupported < ::Protocol::HTTP::Body::Wrapper
 					def join
 						raise UnsupportedError, super
 					end
