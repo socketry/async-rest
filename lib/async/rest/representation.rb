@@ -40,12 +40,23 @@ module Async
 				end
 			end
 			
+			# Instantiate a new representation from a resource and response.
+			#
+			# If a block is given, it is called with the resource and response, and the return value is used as the representation.
+			#
+			# @returns [Representation] the representation of the resource.
 			def self.for(resource, response, &block)
 				if block_given?
-					block.call(response)
+					if block.arity == 1
+						# Original behaviour:
+						yield(response)
+					else
+						# New behaviour:
+						return yield(resource, response)
+					end
+				else
+					return self.new(resource, value: response.read, metadata: response.headers)
 				end
-				
-				return self.new(resource, value: response.read, metadata: response.headers)
 			end
 			
 			# @param resource [Resource] the RESTful resource that this representation is of.

@@ -16,6 +16,32 @@ describe Async::REST::Representation do
 		end
 	end
 	
+	with '.for' do
+		let(:resource) {Async::REST::Resource.new(nil)}
+		let(:response) {Protocol::HTTP::Response[200, {}, nil]}
+		
+		it "can construct a representation" do
+			expect(response).to receive(:read).and_return({test: 123})
+			expect(response).to receive(:headers).and_return({test: 456})
+			
+			expect(representation_class).to receive(:new)
+			representation = representation_class.for(resource, response)
+			
+			expect(representation.value).to be == {test: 123}
+			expect(representation.metadata).to be == {test: 456}
+		end
+		
+		it "can construct a representation with a block" do
+			expect(representation_class).not.to receive(:new)
+			
+			representation = representation_class.for(resource, response) do |resource, response|
+				[resource, response]
+			end
+			
+			expect(representation).to be == [resource, response]
+		end
+	end
+	
 	with '#with' do
 		let(:resource) {Async::REST::Resource.new(nil)}
 		let(:representation) {subject.new(resource)}
