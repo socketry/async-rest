@@ -34,11 +34,11 @@ describe Async::REST::Representation do
 		it "can construct a representation with a block" do
 			expect(representation_class).not.to receive(:new)
 			
-			representation = representation_class.for(resource, response) do |resource, response|
-				[resource, response]
+			representation = representation_class.for(resource, response) do |response|
+				response
 			end
 			
-			expect(representation).to be == [resource, response]
+			expect(representation).to be == response
 		end
 	end
 	

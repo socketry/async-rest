@@ -47,13 +47,7 @@ module Async
 			# @returns [Representation] the representation of the resource.
 			def self.for(resource, response, &block)
 				if block_given?
-					if block.arity == 1
-						# Original behaviour:
-						yield(response)
-					else
-						# New behaviour:
-						return yield(resource, response)
-					end
+					return yield(response, resource, self)
 				else
 					return self.new(resource, value: response.read, metadata: response.headers)
 				end
