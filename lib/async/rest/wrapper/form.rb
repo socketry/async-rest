@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2019-2023, by Samuel Williams.
+# Copyright, 2019-2024, by Samuel Williams.
 
-require_relative 'json'
-require_relative 'url_encoded'
+require_relative "json"
+require_relative "url_encoded"
 
 module Async
 	module REST
@@ -21,11 +21,11 @@ module Async
 				
 				def prepare_request(request, payload)
 					@content_types.each_key do |key|
-						request.headers.add('accept', key)
+						request.headers.add("accept", key)
 					end
 					
 					if payload
-						request.headers['content-type'] = URLEncoded::APPLICATION_FORM_URLENCODED
+						request.headers["content-type"] = URLEncoded::APPLICATION_FORM_URLENCODED
 						
 						request.body = ::Protocol::HTTP::Body::Buffered.new([
 							::Protocol::HTTP::URL.encode(payload)
@@ -34,7 +34,7 @@ module Async
 				end
 				
 				def parser_for(response)
-					if content_type = response.headers['content-type']
+					if content_type = response.headers["content-type"]
 						if parser = @content_types[content_type]
 							return parser
 						end

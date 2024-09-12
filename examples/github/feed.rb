@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2019-2023, by Samuel Williams.
+# Copyright, 2019-2024, by Samuel Williams.
 
-require 'async'
-require 'async/rest'
-require 'async/rest/wrapper/form'
+require "async"
+require "async/rest"
+require "async/rest/wrapper/form"
 
-require 'date'
+require "date"
 
 URL = "https://api.github.com"
 ENDPOINT = Async::HTTP::Endpoint.parse(URL)
@@ -24,7 +24,7 @@ module GitHub
 		end
 		
 		def parser_for(response)
-			if content_type = response.headers['content-type']
+			if content_type = response.headers["content-type"]
 				if content_type.start_with? "application/json"
 					return Async::REST::Wrapper::JSON::Parser
 				end
@@ -102,7 +102,7 @@ end
 
 puts "Connecting..."
 headers = Protocol::HTTP::Headers.new
-headers['user-agent'] = "async-rest/GitHub v#{Async::REST::VERSION}"
+headers["user-agent"] = "async-rest/GitHub v#{Async::REST::VERSION}"
 
 GitHub::Client.for(ENDPOINT, headers) do |client|
 	user = client.user("ioquatix")

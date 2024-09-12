@@ -3,10 +3,10 @@
 # Released under the MIT License.
 # Copyright, 2019-2024, by Samuel Williams.
 
-require 'sus/fixtures/async/http/server_context'
+require "sus/fixtures/async/http/server_context"
 
-require 'async/rest/resource'
-require 'async/rest/representation'
+require "async/rest/resource"
+require "async/rest/representation"
 
 AWrapper = Sus::Shared("a wrapper") do
 	include Sus::Fixtures::Async::HTTP::ServerContext
@@ -16,7 +16,7 @@ AWrapper = Sus::Shared("a wrapper") do
 	
 	let(:middleware) do
 		Protocol::HTTP::Middleware.for do |request|
-			if request.headers['content-type'] == wrapper.content_type
+			if request.headers["content-type"] == wrapper.content_type
 				# Echo it back:
 				Protocol::HTTP::Response[200, request.headers, request.body]
 			else

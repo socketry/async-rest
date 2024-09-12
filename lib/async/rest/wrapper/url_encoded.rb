@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2019-2023, by Samuel Williams.
+# Copyright, 2019-2024, by Samuel Williams.
 
-require 'json'
+require "json"
 
-require 'protocol/http/body/wrapper'
-require 'protocol/http/body/buffered'
+require "protocol/http/body/wrapper"
+require "protocol/http/body/buffered"
 
-require_relative 'generic'
+require_relative "generic"
 
 module Async
 	module REST
@@ -27,10 +27,10 @@ module Async
 				end
 				
 				def prepare_request(request, payload)
-					request.headers['accept'] ||= @content_type
+					request.headers["accept"] ||= @content_type
 					
 					if payload
-						request.headers['content-type'] = @content_type
+						request.headers["content-type"] = @content_type
 						
 						request.body = ::Protocol::HTTP::Body::Buffered.new([
 							::Protocol::HTTP::URL.encode(payload)
@@ -45,7 +45,7 @@ module Async
 				end
 				
 				def parser_for(response)
-					if content_type = response.headers['content-type']
+					if content_type = response.headers["content-type"]
 						if content_type.start_with? @content_type
 							return Parser
 						end

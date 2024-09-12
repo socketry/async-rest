@@ -2,10 +2,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2019-2023, by Samuel Williams.
+# Copyright, 2019-2024, by Samuel Williams.
 
-require 'pry'
-require 'set'
+require "pry"
+require "set"
 
 def rate_limited?(response)
 	pp response
@@ -13,7 +13,7 @@ def rate_limited?(response)
 	response[:error] == "ratelimited"
 end
 
-require 'async/rest'
+require "async/rest"
 
 URL = "https://slack.com/api"
 TOKEN = "xoxp-your-api-token"

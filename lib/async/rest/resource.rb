@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2018-2023, by Samuel Williams.
+# Copyright, 2018-2024, by Samuel Williams.
 
-require 'async'
-require 'async/http/client'
-require 'async/http/endpoint'
+require "async"
+require "async/http/client"
+require "async/http/endpoint"
 
-require 'protocol/http/accept_encoding'
-require 'protocol/http/reference'
+require "protocol/http/accept_encoding"
+require "protocol/http/reference"
 
 module Async
 	module REST

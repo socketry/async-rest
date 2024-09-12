@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2019-2023, by Samuel Williams.
+# Copyright, 2019-2024, by Samuel Williams.
 
-require_relative '../../lib/async/rest'
-require_relative '../../lib/async/rest/wrapper/url_encoded'
+require_relative "../../lib/async/rest"
+require_relative "../../lib/async/rest/wrapper/url_encoded"
 
-require 'nokogiri'
+require "nokogiri"
 
 Async.logger.debug!
 
@@ -32,7 +32,7 @@ module XKCD
 			end
 			
 			def process_response(request, response)
-				if content_type = response.headers['content-type']
+				if content_type = response.headers["content-type"]
 					if content_type.start_with? TEXT_HTML
 						wrap_response(response)
 					else
@@ -54,7 +54,7 @@ module XKCD
 end
 
 Async do
-	URL = 'https://xkcd.com/'
+	URL = "https://xkcd.com/"
 	
 	Async::REST::Resource.for(URL) do |resource|
 		(2000..2010).each do |id|

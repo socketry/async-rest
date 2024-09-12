@@ -1,7 +1,11 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-require 'async/rest'
-require 'console'
+# Released under the MIT License.
+# Copyright, 2024, by Samuel Williams.
+
+require "async/rest"
+require "console"
 
 terminal = Console::Terminal.for($stdout)
 terminal[:reply] = terminal.style(:blue)
@@ -13,11 +17,11 @@ module Ollama
 		APPLICATION_JSON_STREAM = "application/x-ndjson"
 		
 		def prepare_request(request, payload)
-			request.headers.add('accept', APPLICATION_JSON)
-			request.headers.add('accept', APPLICATION_JSON_STREAM)
+			request.headers.add("accept", APPLICATION_JSON)
+			request.headers.add("accept", APPLICATION_JSON_STREAM)
 			
 			if payload
-				request.headers['content-type'] = APPLICATION_JSON
+				request.headers["content-type"] = APPLICATION_JSON
 				
 				request.body = ::Protocol::HTTP::Body::Buffered.new([
 					::JSON.dump(payload)
@@ -80,7 +84,7 @@ module Ollama
 		end
 		
 		def parser_for(response)
-			case response.headers['content-type']
+			case response.headers["content-type"]
 			when APPLICATION_JSON
 				return Async::REST::Wrapper::JSON::Parser
 			when APPLICATION_JSON_STREAM
@@ -108,13 +112,13 @@ module Ollama
 	end
 	
 	class Client < Async::REST::Resource
-		ENDPOINT = Async::HTTP::Endpoint.parse('http://localhost:11434')
+		ENDPOINT = Async::HTTP::Endpoint.parse("http://localhost:11434")
 		
 		def generate(prompt, **options, &block)
 			options[:prompt] = prompt
-			options[:model] ||= 'llama2'
+			options[:model] ||= "llama2"
 			
-			Generate.post(self.with(path: '/api/generate'), options, &block)
+			Generate.post(self.with(path: "/api/generate"), options, &block)
 		end
 	end
 end

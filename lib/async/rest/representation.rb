@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2018-2023, by Samuel Williams.
+# Copyright, 2018-2024, by Samuel Williams.
 # Copyright, 2021, by Terry Kerr.
 
-require_relative 'error'
-require_relative 'resource'
-require_relative 'wrapper/json'
+require_relative "error"
+require_relative "resource"
+require_relative "wrapper/json"
 
 module Async
 	module REST

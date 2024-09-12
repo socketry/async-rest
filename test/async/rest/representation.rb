@@ -3,20 +3,20 @@
 # Released under the MIT License.
 # Copyright, 2021-2024, by Samuel Williams.
 
-require 'async/rest/representation'
+require "async/rest/representation"
 
 describe Async::REST::Representation do
 	let(:base) {Class.new(subject)}
 	let(:representation_class) {base[Async::REST::Wrapper::JSON]}
 	
-	with '.[]' do
+	with ".[]" do
 		it "uses specified base class" do
 			expect(representation_class::WRAPPER).to be_a(Async::REST::Wrapper::JSON)
 			expect(representation_class.superclass).to be_equal(base)
 		end
 	end
 	
-	with '.for' do
+	with ".for" do
 		let(:resource) {Async::REST::Resource.new(nil)}
 		let(:response) {Protocol::HTTP::Response[200, {}, nil]}
 		
@@ -42,7 +42,7 @@ describe Async::REST::Representation do
 		end
 	end
 	
-	with '#with' do
+	with "#with" do
 		let(:resource) {Async::REST::Resource.new(nil)}
 		let(:representation) {subject.new(resource)}
 		

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2023, by Samuel Williams.
+# Copyright, 2023-2024, by Samuel Williams.
 
-require 'wrapper_examples'
-require 'async/rest/wrapper/url_encoded'
+require "wrapper_examples"
+require "async/rest/wrapper/url_encoded"
 
 describe Async::REST::Wrapper::URLEncoded do
 	let(:wrapper) {subject.new}
