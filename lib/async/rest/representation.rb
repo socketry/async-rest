@@ -31,9 +31,9 @@ module Async
 			end
 			
 			class << self
-				::Protocol::HTTP::Methods.each do |name, verb|
-					define_method(verb.downcase) do |resource, payload = nil, &block|
-						self::WRAPPER.call(resource, verb, payload) do |response|
+				::Protocol::HTTP::Methods.each do |name, method|
+					define_method(method.downcase) do |resource, payload = nil, &block|
+						self::WRAPPER.call(resource, method, payload) do |response|
 							return self.for(resource, response, &block)
 						end
 					end
