@@ -70,6 +70,10 @@ module Async
 				self.class.with(self, **options)
 			end
 			
+			def path
+				@reference.path
+			end
+			
 			def inspect
 				"\#<#{self.class} #{@reference.inspect} #{@headers.inspect}>"
 			end

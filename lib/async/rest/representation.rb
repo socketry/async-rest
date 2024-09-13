@@ -103,33 +103,29 @@ module Async
 			
 			# Provides a way to mutate the value of the representation.
 			module Mutable
-				def value= value
-					@value = self.assign(value)
+				def post(value)
+					self.class.post(@resource, value) do |resource, response|
+						@value = response.read
+						
+						self
+					end
 				end
 				
-				def call(value)
+				def delete
+					self.class.delete(@resource)
+				end
+				
+				def assign(value)
 					if value
 						self.post(value)
 					else
 						self.delete
 					end
 				end
-				
-				def assign(value)
-					response = self.call(value)
-					
-					response.read
-					
-					return @value
-				end
-				
-				def update
-					@value = assign(@value)
-				end
 			end
 			
 			def inspect
-				"\#<#{self.class} #{@resource.inspect} value=#{@value.inspect}>"
+				"\#<#{self.class} #{@resource.path.inspect} value=#{@value.inspect}>"
 			end
 		end
 	end

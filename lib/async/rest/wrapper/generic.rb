@@ -7,8 +7,9 @@ module Async
 	module REST
 		module Wrapper
 			class Generic
-				def call(resource, verb = "GET", payload = nil, &block)
-					request = ::Protocol::HTTP::Request[verb, nil]
+				def call(resource, method = "GET", payload = nil, &block)
+					request = ::Protocol::HTTP::Request[method, nil]
+					
 					self.prepare_request(request, payload)
 					
 					response = resource.call(request)
