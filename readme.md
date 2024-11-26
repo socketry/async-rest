@@ -15,6 +15,13 @@ Please see the [project documentation](https://socketry.github.io/async-rest/) f
 
   - [Getting Started](https://socketry.github.io/async-rest/guides/getting-started/index) - This guide explains the design of the `async-rest` gem and how to use it to access RESTful APIs.
 
+## See Also
+
+  - [async-ollama](https://github.com/socketry/async-ollama) - A client for Ollama, a local large language model server.
+  - [async-discord](https://github.com/socketry/async-discord) - A client for Discord, a popular chat platform.
+  - [cloudflare](https://github.com/socketry/cloudflare) - A client for Cloudflare, a popular CDN and DDoS protection service.
+  - [async-slack](https://github.com/socketry/async-slack) - A client for Slack, a popular chat platform.
+
 ## Contributing
 
 We welcome contributions to this project.
