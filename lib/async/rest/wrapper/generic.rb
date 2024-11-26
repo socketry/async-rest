@@ -65,7 +65,9 @@ module Async
 				# Wrap the response body in the given klass.
 				def wrap_response(response)
 					if body = response.body
-						response.body = parser_for(response).new(body)
+						if parser = parser_for(response)
+							response.body = parser.new(body)
+						end
 					end
 					
 					return response
