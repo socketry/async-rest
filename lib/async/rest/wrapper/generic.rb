@@ -7,13 +7,20 @@ module Async
 	module REST
 		module Wrapper
 			class Generic
-				protected def response_for(resource, request)
+				def retry_after_duration(value)
+					retry_after_time = Time.httpdate(value)
+					return [retry_after_time - Time.now, 0].max
+				rescue ArgumentError
+					return value.to_f
+				end
+				
+				def response_for(resource, request)
 					while true
 						response = resource.call(request)
 						
 						if response.status == 429
 							if retry_after = response.headers["retry-after"]
-								sleep(retry_after.to_f)
+								sleep(retry_after_duration(retry_after))
 							else
 								# Without the `retry-after` header, we can't determine how long to wait, so we just return the response.
 								return response
@@ -59,7 +66,7 @@ module Async
 				
 				def parser_for(response)
 					# It's not always clear why this error is being thrown.
-					return Unsupported
+					return nil
 				end
 				
 				# Wrap the response body in the given klass.
