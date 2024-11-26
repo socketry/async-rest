@@ -7,12 +7,29 @@ module Async
 	module REST
 		module Wrapper
 			class Generic
+				protected def response_for(resource, request)
+					while true
+						response = resource.call(request)
+						
+						if response.status == 429
+							if retry_after = response.headers["retry-after"]
+								sleep(retry_after.to_f)
+							else
+								# Without the `retry-after` header, we can't determine how long to wait, so we just return the response.
+								return response
+							end
+						else
+							return response
+						end
+					end
+				end
+				
 				def call(resource, method = "GET", payload = nil, &block)
 					request = ::Protocol::HTTP::Request[method, nil]
 					
 					self.prepare_request(request, payload)
 					
-					response = resource.call(request)
+					response = self.response_for(resource, request)
 					
 					# If we exit this block because of an exception, we close the response. This ensures we don't have any dangling connections.
 					begin
