@@ -43,7 +43,7 @@ module DNS
 		
 		# Resolve a DNS query.
 		def resolve(name, type)
-			self.call(Query, name: name, type: type)
+			Query.get(self.with(parameters: { name: name, type: type }))
 		end
 	end
 end
