@@ -34,8 +34,8 @@ module Async
 				end
 				
 				def parser_for(response)
-					content_type, _ = response.headers["content-type"].split(";")
-					if content_type && parser = @content_types[content_type]
+					media_type, _ = response.headers["content-type"].split(";")
+					if media_type && parser = @content_types[media_type]
 						return parser
 					end
 					
