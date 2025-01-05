@@ -5,3 +5,4 @@
 
 require_relative "rest/version"
 require_relative "rest/representation"
+require_relative "rest/wrapper"
