@@ -34,6 +34,8 @@ module Async
 				
 				expect(instance).to be_a(representation)
 				expect(instance.value).to be == payload
+			ensure
+				instance&.close
 			end
 		end
 	end
