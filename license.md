@@ -1,9 +1,10 @@
 # MIT License
 
-Copyright, 2018-2024, by Samuel Williams.  
+Copyright, 2018-2025, by Samuel Williams.  
 Copyright, 2019, by Cyril Roelandt.  
 Copyright, 2020-2021, by Olle Jonsson.  
 Copyright, 2021, by Terry Kerr.  
+Copyright, 2025, by Ayush Newatia.  
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

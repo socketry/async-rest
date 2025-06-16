@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
 	spec.version = Async::REST::VERSION
 	
 	spec.summary = "A library for RESTful clients (and hopefully servers)."
-	spec.authors = ["Samuel Williams", "Olle Jonsson", "Cyril Roelandt", "Terry Kerr"]
+	spec.authors = ["Samuel Williams", "Ayush Newatia", "Olle Jonsson", "Cyril Roelandt", "Terry Kerr"]
 	spec.license = "MIT"
 	
 	spec.cert_chain  = ["release.cert"]
@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
 	
 	spec.files = Dir.glob(["{lib}/**/*", "*.md"], File::FNM_DOTMATCH, base: __dir__)
 	
-	spec.required_ruby_version = ">= 3.1"
+	spec.required_ruby_version = ">= 3.2"
 	
 	spec.add_dependency "async-http", "~> 0.42"
 	spec.add_dependency "protocol-http", "~> 0.45"

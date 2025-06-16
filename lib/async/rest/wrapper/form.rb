@@ -2,6 +2,7 @@
 
 # Released under the MIT License.
 # Copyright, 2019-2024, by Samuel Williams.
+# Copyright, 2025, by Ayush Newatia.
 
 require_relative "json"
 require_relative "url_encoded"
