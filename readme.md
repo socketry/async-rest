@@ -15,6 +15,57 @@ Please see the [project documentation](https://socketry.github.io/async-rest/) f
 
   - [Getting Started](https://socketry.github.io/async-rest/guides/getting-started/index) - This guide explains the design of the `async-rest` gem and how to use it to access RESTful APIs.
 
+## Releases
+
+Please see the [project releases](https://socketry.github.io/async-rest/releases/index) for all releases.
+
+### Unreleased
+
+  - Migrated to `protocol-url` gem for URL handling.
+  - Ensured instances are properly closed after use to prevent resource leaks.
+  - All wrappers are now required by default from main `async/rest.rb` entry point.
+  - Fixed logic to correctly parse JSON responses in `Form` wrapper.
+
+### v0.19.1
+
+  - Fixed `retry-after` header handling to treat it as a single value header.
+
+### v0.19.0
+
+  - Added support for standard `retry-after` rate limiting.
+  - Improved response body handling to only replace the body if a parser is found.
+
+### v0.18.0
+
+  - Minor improvements and fixes to `Mutable`.
+
+### v0.17.0
+
+  - Bug fixes and minor improvements.
+
+### v0.16.0
+
+  - Removed legacy behaviour for cleaner implementation.
+
+### v0.15.0
+
+  - `Representation.for` can now take a block and return a custom representation.
+  - Renamed methods to prefer `method` rather than `verb` for HTTP operations.
+
+### v0.14.0
+
+  - Fixed constant names.
+  - Removed unused and legacy requires.
+
+### v0.13.0
+
+  - Better support for streaming responses.
+  - Simplified interface for resources and representations.
+
+### v0.12.4
+
+  - Fixed `self.new` to use `self.class.new` for proper subclass instantiation.
+
 ## See Also
 
   - [async-ollama](https://github.com/socketry/async-ollama) - A client for Ollama, a local large language model server.

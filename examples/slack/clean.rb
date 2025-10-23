@@ -39,13 +39,13 @@ Async::REST::Resource.for(URL) do |resource|
 			channel_id = message[:channel][:id]
 			channel_name = message[:channel][:name]
 			timestamp = message[:ts]
-		
+			
 			pp [timestamp, channel_name, text]
-		
+			
 			message_delete = Async::REST::Representation.new(
 				delete.with(parameters: {channel: channel_id, ts: timestamp})
 			)
-		
+			
 			response = message_delete.post
 			if rate_limited?(response.read)
 				puts "Rate limiting..."

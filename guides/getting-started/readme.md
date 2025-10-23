@@ -24,7 +24,7 @@ Just as a webpage has hyperlinks, forms and buttons for connecting information a
 Generally speaking, you should model your interface around representations. Each representation should be a subclass of {ruby Async::REST::Representation} and define methods that represent the actions that can be performed on that resource.
 
 ```ruby
-require 'async/rest'
+require "async/rest"
 
 module DNS
 	class Query < Async::REST::Representation[Async::REST::Wrapper::JSON]
@@ -39,7 +39,7 @@ module DNS
 	
 	class Client < Async::REST::Resource
 		# This is the default endpoint to use unless otherwise specified:
-		ENDPOINT = Async::HTTP::Endpoint.parse('https://dns.google/resolve')
+		ENDPOINT = Async::HTTP::Endpoint.parse("https://dns.google/resolve")
 		
 		# Resolve a DNS query.
 		def resolve(name, type)
@@ -49,7 +49,7 @@ module DNS
 end
 
 DNS::Client.open do |client|
-	query = client.resolve('example.com', 'AAAA')
+	query = client.resolve("example.com", "AAAA")
 	
 	puts query.question
 	# {:name=>"example.com.", :type=>28}
