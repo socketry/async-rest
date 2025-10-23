@@ -24,4 +24,6 @@ group :test do
 	
 	gem "bake-test"
 	gem "bake-test-external"
+	
+	gem "openssl", ">= 3.3.1"
 end
