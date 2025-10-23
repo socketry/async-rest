@@ -19,7 +19,7 @@ Please see the [project documentation](https://socketry.github.io/async-rest/) f
 
 Please see the [project releases](https://socketry.github.io/async-rest/releases/index) for all releases.
 
-### Unreleased
+### v0.20.0
 
   - Migrated to `protocol-url` gem for URL handling.
   - Ensured instances are properly closed after use to prevent resource leaks.
