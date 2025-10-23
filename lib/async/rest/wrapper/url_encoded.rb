@@ -33,14 +33,14 @@ module Async
 						request.headers["content-type"] = @content_type
 						
 						request.body = ::Protocol::HTTP::Body::Buffered.new([
-							::Protocol::HTTP::URL.encode(payload)
+							::Protocol::URL::Encoding.encode(payload)
 						])
 					end
 				end
 				
 				class Parser < ::Protocol::HTTP::Body::Wrapper
 					def join
-						::Protocol::HTTP::URL.decode(super, symbolize_keys: true)
+						::Protocol::URL::Encoding.decode(super, symbolize_keys: true)
 					end
 				end
 				

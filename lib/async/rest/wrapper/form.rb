@@ -29,7 +29,7 @@ module Async
 						request.headers["content-type"] = URLEncoded::APPLICATION_FORM_URLENCODED
 						
 						request.body = ::Protocol::HTTP::Body::Buffered.new([
-							::Protocol::HTTP::URL.encode(payload)
+							::Protocol::URL::Encoding.encode(payload)
 						])
 					end
 				end

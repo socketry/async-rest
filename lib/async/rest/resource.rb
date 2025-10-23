@@ -8,7 +8,7 @@ require "async/http/client"
 require "async/http/endpoint"
 
 require "protocol/http/accept_encoding"
-require "protocol/http/reference"
+require "protocol/url/reference"
 
 module Async
 	module REST
@@ -20,9 +20,9 @@ module Async
 			
 			# Connect to the given endpoint, returning the HTTP client and reference.
 			# @parameter endpoint [Async::HTTP::Endpoint] used to connect to the remote system and specify the base path.
-			# @returns [Tuple(Async::HTTP::Client, ::Protocol::HTTP::Reference)] the client and reference.
+			# @returns [Tuple(Async::HTTP::Client, ::Protocol::URL::Reference)] the client and reference.
 			def self.connect(endpoint)
-				reference = ::Protocol::HTTP::Reference.parse(endpoint.path)
+				reference = ::Protocol::URL::Reference.parse(endpoint.path)
 				
 				return ::Protocol::HTTP::AcceptEncoding.new(HTTP::Client.new(endpoint)), reference
 			end
@@ -54,9 +54,9 @@ module Async
 			end
 			
 			# @parameter delegate [Async::HTTP::Middleware] the delegate that will handle requests.
-			# @parameter reference [::Protocol::HTTP::Reference] the resource identifier (base request path/parameters).
+			# @parameter reference [::Protocol::URL::Reference] the resource identifier (base request path/parameters).
 			# @parameter headers [::Protocol::HTTP::Headers] the default headers that will be supplied with the request.
-			def initialize(delegate, reference = ::Protocol::HTTP::Reference.parse, headers = ::Protocol::HTTP::Headers.new)
+			def initialize(delegate, reference = ::Protocol::URL::Reference.parse, headers = ::Protocol::HTTP::Headers.new)
 				super(delegate)
 				
 				@reference = reference
