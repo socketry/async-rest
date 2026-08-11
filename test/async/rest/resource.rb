@@ -10,12 +10,12 @@ describe Async::REST::Resource do
 	let(:resource) {subject.open(url)}
 	
 	it "can update path" do
-		expect(resource.reference.path).to be == "/"
+		expect(resource.reference.path).to be == Protocol::URL::Path["/"]
 		
 		foo_resource = resource.with(path: "/foo")
-		expect(foo_resource.reference.path).to be == "/foo"
+		expect(foo_resource.reference.path).to be == Protocol::URL::Path["/foo"]
 		
 		bar_resource = foo_resource.with(path: "bar")
-		expect(bar_resource.reference.path).to be == "/foo/bar"
+		expect(bar_resource.reference.path).to be == Protocol::URL::Path["/foo/bar"]
 	end
 end
